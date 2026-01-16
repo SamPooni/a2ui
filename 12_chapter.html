@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>11. Performance and Security Considerations — AG-UI + A2UI</title>
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: #fff;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Animated gradient background */
+.page {
+  min-height: 100vh;
+  position: relative;
+  background: #000;
+}
+
+.page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.08) 0%, transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 30%);
+  animation: bgShift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes bgShift {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 24px; }
+}
+
+/* ==================== HERO ==================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 0;
+}
+
+.hero__logo {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 40px;
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero__title {
+  font-size: clamp(3.5rem, 12vw, 7rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+  margin-bottom: 24px;
+}
+
+.hero__title-line {
+  display: block;
+}
+
+.hero__title-line:first-child {
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__title-line:last-child {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__subtitle {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-weight: 400;
+  color: rgba(255,255,255,0.6);
+  max-width: 600px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 36px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 60px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+}
+
+.hero__cta:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5);
+}
+
+.hero__cta svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.hero__stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 80px;
+  padding-top: 48px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.hero__stat {
+  text-align: center;
+}
+
+.hero__stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__stat-label {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+}
+
+/* ==================== CHAPTERS LIST ==================== */
+.chapters {
+  padding: 100px 0 120px;
+}
+
+.chapters__header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.chapters__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #6366f1;
+  margin-bottom: 16px;
+}
+
+.chapters__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.chapters__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chapter-link {
+  display: flex;
+  align-items: center;
+  padding: 24px 32px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #6366f1, #a78bfa, #ec4899);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.chapter-link:hover {
+  background: rgba(255,255,255,0.05);
+  transform: translateX(8px);
+}
+
+.chapter-link:hover::before {
+  opacity: 1;
+}
+
+.chapter-link__num {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #6366f1;
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.chapter-link__title {
+  flex: 1;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+}
+
+.chapter-link__desc {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.4);
+  margin-right: 20px;
+}
+
+.chapter-link__arrow {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.chapter-link:hover .chapter-link__arrow {
+  background: #6366f1;
+  transform: translateX(4px);
+}
+
+.chapter-link__arrow svg {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(255,255,255,0.5);
+  fill: none;
+  stroke-width: 2;
+  transition: stroke 0.3s;
+}
+
+.chapter-link:hover .chapter-link__arrow svg {
+  stroke: #fff;
+}
+
+/* ==================== CHAPTER PAGE ==================== */
+.chapter-page {
+  padding: 60px 0 100px;
+}
+
+.chapter-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  margin-bottom: 48px;
+  transition: all 0.3s;
+}
+
+.chapter-page__back:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.chapter-page__header {
+  margin-bottom: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.chapter-page__num {
+  font-size: clamp(5rem, 15vw, 10rem);
+  font-weight: 900;
+  line-height: 0.85;
+  background: linear-gradient(180deg, rgba(99,102,241,0.4) 0%, rgba(99,102,241,0.05) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+/* ==================== CONTENT ==================== */
+.content {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 32px;
+  padding: 64px;
+}
+
+@media (max-width: 768px) {
+  .content { padding: 32px 24px; border-radius: 24px; }
+}
+
+.content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, #fff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 56px 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #22d3ee;
+  margin: 40px 0 16px;
+}
+
+.content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #a78bfa;
+  margin: 32px 0 12px;
+}
+
+.content p {
+  font-size: 1.0625rem;
+  color: rgba(255,255,255,0.7);
+  margin: 20px 0;
+  line-height: 1.85;
+}
+
+.content strong { color: #fff; font-weight: 600; }
+
+.content ul, .content ol {
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.content li {
+  position: relative;
+  padding: 16px 0 16px 32px;
+  color: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.7;
+}
+
+.content li:last-child { border-bottom: none; }
+
+.content li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(99,102,241,0.5);
+}
+
+/* Code blocks */
+.content pre {
+  background: linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 56px 28px 28px;
+  margin: 32px 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+.content pre::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: #ff5f57;
+  border-radius: 50%;
+  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #28ca42;
+}
+
+.content code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  color: #e4e4e7;
+  line-height: 1.75;
+}
+
+.content p code, .content li code {
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 6px;
+  padding: 3px 10px;
+  color: #22d3ee;
+  font-size: 0.875em;
+}
+
+/* ==================== TABLE OF CONTENTS ==================== */
+.toc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 32px;
+}
+
+.toc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 28px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.toc-item:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateX(8px);
+}
+
+.toc-item__text {
+  flex: 1;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.toc-item__page {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  padding: 6px 14px;
+  border-radius: 20px;
+  min-width: 44px;
+  text-align: center;
+}
+
+/* Level 1 - Main chapters */
+.toc-item--l1 {
+  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(139,92,246,0.08) 100%);
+  border-color: rgba(99,102,241,0.2);
+  margin-top: 12px;
+}
+
+.toc-item--l1:first-child { margin-top: 0; }
+
+.toc-item--l1 .toc-item__text {
+  font-weight: 600;
+  font-size: 1.0625rem;
+  color: #fff;
+}
+
+.toc-item--l1 .toc-item__page {
+  background: rgba(99,102,241,0.3);
+  color: #fff;
+}
+
+.toc-item--l1:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.15) 100%);
+  border-color: rgba(99,102,241,0.4);
+}
+
+/* Level 2 */
+.toc-item--l2 {
+  margin-left: 28px;
+  padding: 16px 24px;
+}
+
+.toc-item--l2 .toc-item__text { font-size: 0.95rem; }
+
+/* Level 3 */
+.toc-item--l3 {
+  margin-left: 56px;
+  padding: 14px 20px;
+  background: transparent;
+  border-color: rgba(255,255,255,0.02);
+}
+
+.toc-item--l3 .toc-item__text {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.toc-item--l3 .toc-item__page {
+  background: transparent;
+  color: rgba(255,255,255,0.25);
+}
+
+/* ==================== NAVIGATION ==================== */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  flex-wrap: wrap;
+}
+
+.nav__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 60px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.nav__btn:hover {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  box-shadow: 0 10px 40px rgba(99,102,241,0.3);
+}
+
+.nav__btn--secondary:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .nav { flex-direction: column; }
+  .nav__btn { width: 100%; justify-content: center; }
+  .hero__stats { flex-direction: column; gap: 24px; }
+}
+
+/* Hide Word note */
+.word-note { display: none; }
+
+::selection { background: rgba(99,102,241,0.4); }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #333; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <section class="chapter-page">
+        <a href="00_title_page.html" class="chapter-page__back">← Back to chapters</a>
+        
+        <div class="chapter-page__header">
+          <div class="chapter-page__num">11</div>
+        </div>
+        <article class="content">
+          <h1>11. Performance and Security Considerations</h1>
+<p>Production deployment of AG-UI and A2UI applications requires careful attention to performance optimization and security hardening. This chapter covers essential considerations for enterprise environments.</p>
+<h2>Performance Optimization Strategies</h2>
+<ul>
+<li>Event batching and compression for high-throughput scenarios</li>
+<li>Component memoization and virtual scrolling for large datasets</li>
+<li>Progressive loading and lazy rendering for complex interfaces</li>
+<li>Connection pooling and multiplexing for agent communications</li>
+<li>Intelligent caching strategies for frequently accessed components</li>
+</ul>
+<pre><code>// Performance optimization configuration const performanceConfig = {   eventBatching: {     enabled: true,     maxBatchSize: 50,     batchTimeout: 100, // ms     compressionThreshold: 1024 // bytes   },      componentCaching: {     enabled: true,     maxCacheSize: 100, // components     ttl: 300000, // 5 minutes     keyStrategy: &#x27;content_hash&#x27;   },      streaming: {     backpressureThreshold: 1000, // events     flowControlEnabled: true,     adaptiveBitrate: true   },      rendering: {     virtualScrolling: true,     lazyLoading: true,     memoization: &#x27;aggressive&#x27;,     updateDebouncing: 16 // ms (60 FPS)   } };  // Performance monitoring hooks function usePerformanceMonitoring() {   const [metrics, setMetrics] = useState({     eventLatency: 0,     renderTime: 0,     memoryUsage: 0,     componentCount: 0   });      useEffect(() =&gt; {     const monitor = new PerformanceMonitor({       onMetricsUpdate: setMetrics,       sampleRate: 1000 // ms     });          return () =&gt; monitor.stop();   }, []);      return metrics; }</code></pre>
+<h2>Security Architecture</h2>
+<pre><code>// Comprehensive security configuration const securityConfig = {   authentication: {     type: &#x27;oauth2_pkce&#x27;,     provider: &#x27;enterprise_sso&#x27;,     client_id: process.env.OAUTH_CLIENT_ID,     scopes: [&#x27;agui.read&#x27;, &#x27;agui.write&#x27;, &#x27;a2ui.render&#x27;],     token_validation: {       verify_signature: true,       check_expiration: true,       clock_skew_tolerance: 300, // seconds       required_claims: [&#x27;sub&#x27;, &#x27;aud&#x27;, &#x27;iss&#x27;, &#x27;agui.access&#x27;],       custom_validators: [         &#x27;validate_user_permissions&#x27;,         &#x27;check_rate_limits&#x27;       ]     }   },      authorization: {     model: &#x27;rbac&#x27;, // Role-Based Access Control     component_access_control: {       enabled: true,       default_policy: &#x27;deny&#x27;,       role_mappings: {         &#x27;admin&#x27;: [&#x27;*&#x27;],         &#x27;user&#x27;: [&#x27;text_input&#x27;, &#x27;button&#x27;, &#x27;display_card&#x27;],         &#x27;readonly&#x27;: [&#x27;display_card&#x27;, &#x27;chart&#x27;]       }     },     tool_permissions: {       &#x27;database_query&#x27;: [&#x27;admin&#x27;, &#x27;analyst&#x27;],       &#x27;email_send&#x27;: [&#x27;admin&#x27;, &#x27;marketing&#x27;],       &#x27;file_upload&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;]     },     data_classification: {       &#x27;public&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;, &#x27;readonly&#x27;],       &#x27;internal&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;],       &#x27;confidential&#x27;: [&#x27;admin&#x27;],       &#x27;restricted&#x27;: [] // Explicit approval required     }   },      encryption: {     transport: {       protocol: &#x27;tls_1_3&#x27;,       cipher_suites: [&#x27;TLS_AES_256_GCM_SHA384&#x27;],       certificate_pinning: true     },     at_rest: {       algorithm: &#x27;aes_256_gcm&#x27;,       key_management: &#x27;hsm&#x27;, // Hardware Security Module       key_rotation_interval: &#x27;30d&#x27;     },     in_memory: {       enabled: true,       clear_on_idle: true,       idle_timeout: 1800 // seconds     }   },      content_security: {     component_validation: {       strict_schema_validation: true,       sanitize_properties: true,       validate_event_handlers: true     },     xss_protection: {       enabled: true,       content_type_validation: true,       html_sanitization: &#x27;aggressive&#x27;     },     injection_prevention: {       sql_injection_detection: true,       script_injection_blocking: true,       command_injection_filtering: true     }   },      audit_logging: {     enabled: true,     log_level: &#x27;detailed&#x27;,     events: [       &#x27;authentication&#x27;,       &#x27;authorization_failures&#x27;,       &#x27;component_generation&#x27;,       &#x27;user_interactions&#x27;,       &#x27;data_access&#x27;,       &#x27;configuration_changes&#x27;     ],     retention_policy: {       duration: &#x27;7_years&#x27;,       compression: &#x27;gzip&#x27;,       archival: &#x27;s3_glacier&#x27;     },     compliance_standards: [       &#x27;SOX&#x27;, &#x27;GDPR&#x27;, &#x27;HIPAA&#x27;, &#x27;PCI_DSS&#x27;     ]   } };</code></pre>
+<h2>Threat Model and Mitigations</h2>
+<p>Key security threats and mitigation strategies:</p>
+<ul>
+<li>Malicious Agent Injection: Component catalog validation and sandboxing</li>
+<li>Data Exfiltration: Role-based access controls and data classification</li>
+<li>Session Hijacking: Token rotation and secure session management</li>
+<li>UI Injection Attacks: Strict content validation and sanitization</li>
+<li>Denial of Service: Rate limiting and resource quotas</li>
+</ul>
+          <nav class="nav">
+            <a href="11_chapter.html" class="nav__btn nav__btn--secondary">← Previous</a>
+            <a href="01_chapter.html" class="nav__btn nav__btn--secondary">Contents</a>
+            <a href="13_chapter.html" class="nav__btn">Next Chapter →</a>
+          </nav>
+        </article>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4. A2UI Protocol Deep Dive — AG-UI + A2UI</title>
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: #fff;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Animated gradient background */
+.page {
+  min-height: 100vh;
+  position: relative;
+  background: #000;
+}
+
+.page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.08) 0%, transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 30%);
+  animation: bgShift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes bgShift {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 24px; }
+}
+
+/* ==================== HERO ==================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 0;
+}
+
+.hero__logo {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 40px;
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero__title {
+  font-size: clamp(3.5rem, 12vw, 7rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+  margin-bottom: 24px;
+}
+
+.hero__title-line {
+  display: block;
+}
+
+.hero__title-line:first-child {
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__title-line:last-child {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__subtitle {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-weight: 400;
+  color: rgba(255,255,255,0.6);
+  max-width: 600px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 36px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 60px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+}
+
+.hero__cta:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5);
+}
+
+.hero__cta svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.hero__stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 80px;
+  padding-top: 48px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.hero__stat {
+  text-align: center;
+}
+
+.hero__stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__stat-label {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+}
+
+/* ==================== CHAPTERS LIST ==================== */
+.chapters {
+  padding: 100px 0 120px;
+}
+
+.chapters__header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.chapters__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #6366f1;
+  margin-bottom: 16px;
+}
+
+.chapters__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.chapters__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chapter-link {
+  display: flex;
+  align-items: center;
+  padding: 24px 32px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #6366f1, #a78bfa, #ec4899);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.chapter-link:hover {
+  background: rgba(255,255,255,0.05);
+  transform: translateX(8px);
+}
+
+.chapter-link:hover::before {
+  opacity: 1;
+}
+
+.chapter-link__num {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #6366f1;
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.chapter-link__title {
+  flex: 1;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+}
+
+.chapter-link__desc {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.4);
+  margin-right: 20px;
+}
+
+.chapter-link__arrow {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.chapter-link:hover .chapter-link__arrow {
+  background: #6366f1;
+  transform: translateX(4px);
+}
+
+.chapter-link__arrow svg {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(255,255,255,0.5);
+  fill: none;
+  stroke-width: 2;
+  transition: stroke 0.3s;
+}
+
+.chapter-link:hover .chapter-link__arrow svg {
+  stroke: #fff;
+}
+
+/* ==================== CHAPTER PAGE ==================== */
+.chapter-page {
+  padding: 60px 0 100px;
+}
+
+.chapter-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  margin-bottom: 48px;
+  transition: all 0.3s;
+}
+
+.chapter-page__back:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.chapter-page__header {
+  margin-bottom: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.chapter-page__num {
+  font-size: clamp(5rem, 15vw, 10rem);
+  font-weight: 900;
+  line-height: 0.85;
+  background: linear-gradient(180deg, rgba(99,102,241,0.4) 0%, rgba(99,102,241,0.05) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+/* ==================== CONTENT ==================== */
+.content {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 32px;
+  padding: 64px;
+}
+
+@media (max-width: 768px) {
+  .content { padding: 32px 24px; border-radius: 24px; }
+}
+
+.content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, #fff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 56px 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #22d3ee;
+  margin: 40px 0 16px;
+}
+
+.content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #a78bfa;
+  margin: 32px 0 12px;
+}
+
+.content p {
+  font-size: 1.0625rem;
+  color: rgba(255,255,255,0.7);
+  margin: 20px 0;
+  line-height: 1.85;
+}
+
+.content strong { color: #fff; font-weight: 600; }
+
+.content ul, .content ol {
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.content li {
+  position: relative;
+  padding: 16px 0 16px 32px;
+  color: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.7;
+}
+
+.content li:last-child { border-bottom: none; }
+
+.content li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(99,102,241,0.5);
+}
+
+/* Code blocks */
+.content pre {
+  background: linear-gradient(180deg, #0a0a0f 0%, #0f0f18 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 56px 28px 28px;
+  margin: 32px 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+.content pre::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: #ff5f57;
+  border-radius: 50%;
+  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #28ca42;
+}
+
+.content code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  color: #e4e4e7;
+  line-height: 1.75;
+}
+
+.content p code, .content li code {
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 6px;
+  padding: 3px 10px;
+  color: #22d3ee;
+  font-size: 0.875em;
+}
+
+/* ==================== TABLE OF CONTENTS ==================== */
+.toc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 32px;
+}
+
+.toc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 28px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.toc-item:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateX(8px);
+}
+
+.toc-item__text {
+  flex: 1;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.toc-item__page {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  padding: 6px 14px;
+  border-radius: 20px;
+  min-width: 44px;
+  text-align: center;
+}
+
+/* Level 1 - Main chapters */
+.toc-item--l1 {
+  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(139,92,246,0.08) 100%);
+  border-color: rgba(99,102,241,0.2);
+  margin-top: 12px;
+}
+
+.toc-item--l1:first-child { margin-top: 0; }
+
+.toc-item--l1 .toc-item__text {
+  font-weight: 600;
+  font-size: 1.0625rem;
+  color: #fff;
+}
+
+.toc-item--l1 .toc-item__page {
+  background: rgba(99,102,241,0.3);
+  color: #fff;
+}
+
+.toc-item--l1:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.15) 100%);
+  border-color: rgba(99,102,241,0.4);
+}
+
+/* Level 2 */
+.toc-item--l2 {
+  margin-left: 28px;
+  padding: 16px 24px;
+}
+
+.toc-item--l2 .toc-item__text { font-size: 0.95rem; }
+
+/* Level 3 */
+.toc-item--l3 {
+  margin-left: 56px;
+  padding: 14px 20px;
+  background: transparent;
+  border-color: rgba(255,255,255,0.02);
+}
+
+.toc-item--l3 .toc-item__text {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.toc-item--l3 .toc-item__page {
+  background: transparent;
+  color: rgba(255,255,255,0.25);
+}
+
+/* ==================== NAVIGATION ==================== */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  flex-wrap: wrap;
+}
+
+.nav__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 60px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.nav__btn:hover {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  box-shadow: 0 10px 40px rgba(99,102,241,0.3);
+}
+
+.nav__btn--secondary:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .nav { flex-direction: column; }
+  .nav__btn { width: 100%; justify-content: center; }
+  .hero__stats { flex-direction: column; gap: 24px; }
+}
+
+/* Hide Word note */
+.word-note { display: none; }
+
+::selection { background: rgba(99,102,241,0.4); }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #333; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <section class="chapter-page">
+        <a href="00_title_page.html" class="chapter-page__back">← Back to chapters</a>
+        
+        <div class="chapter-page__header">
+          <div class="chapter-page__num">04</div>
+        </div>
+        <article class="content">
+          <h1>4. A2UI Protocol Deep Dive</h1>
+<p>Google&#x27;s Agent-to-User Interface Protocol (A2UI) introduces a revolutionary approach to agent-generated user interfaces, prioritizing security, cross-platform compatibility, and native performance. Currently at <strong>v0.8 Public Preview</strong>, A2UI is available at <a href="https://a2ui.org/" style="color:#60a5fa;">https://a2ui.org/</a> with full source code at <a href="https://github.com/google/A2UI" style="color:#60a5fa;">https://github.com/google/A2UI</a>.</p>
+<p>Unlike traditional approaches that generate executable code or rely on sandboxed iframes (such as MCP Apps), A2UI takes a <strong>"native-first" approach</strong>—the same JSON payload renders appropriately on web, mobile, and desktop platforms using each platform's native UI components. As highlighted in The New Stack's analysis, this differentiates A2UI from competitors who rely on web-centric iframe approaches.</p>
+<p>Google is using A2UI across products including <strong>Google Opal</strong>, <strong>Gemini Enterprise</strong>, and <strong>Flutter GenUI SDK</strong>, demonstrating production viability at scale.</p>
+<h2>The Six-Step Communication Flow</h2>
+<p>A2UI defines a clean six-step flow for agent-UI interaction, ensuring clear separation of responsibilities:</p>
+<ul>
+<li><strong>Step 1 - User Message:</strong> User sends a natural language request to the agent through the AG-UI transport layer</li>
+<li><strong>Step 2 - Agent Processing:</strong> Agent interprets intent using LLM reasoning and determines appropriate UI requirements</li>
+<li><strong>Step 3 - A2UI Generation:</strong> Agent generates A2UI JSON declarations describing the desired interface components</li>
+<li><strong>Step 4 - Stream to Client:</strong> A2UI payload streams to client via AG-UI transport (SSE/WebSocket) using JSONL format</li>
+<li><strong>Step 5 - Native Rendering:</strong> Client validates payload and renders using platform-native components from the pre-approved catalog</li>
+<li><strong>Step 6 - User Interaction:</strong> User interacts with generated UI; events flow back to agent for processing and UI updates</li>
+</ul>
+<h2>Official Demos and Resources</h2>
+<p>The A2UI website at <a href="https://a2ui.org/" style="color:#60a5fa;">https://a2ui.org/</a> showcases compelling demonstrations:</p>
+<ul>
+<li><strong>Landscape Architect Demo:</strong> An agent that analyzes uploaded photos of outdoor spaces and generates custom landscaping forms—showcasing computer vision integration with dynamic form generation</li>
+<li><strong>Interactive Charts & Maps:</strong> Demonstrates how agents choose the right visualization format contextually based on data type</li>
+<li><strong>A2UI Widget Builder:</strong> Available at <a href="https://a2ui-composer.ag-ui.com/gallery" style="color:#60a5fa;">https://a2ui-composer.ag-ui.com/gallery</a>, this CopilotKit-powered tool lets developers experiment with component generation without full implementation</li>
+</ul>
+<h2>Declarative UI Generation Philosophy</h2>
+<p>A2UI&#x27;s core innovation lies in its declarative approach to UI generation. Instead of generating executable code that runs in the client environment, agents describe their interface requirements using structured JSON payloads that client applications interpret and render using pre-approved, native components.</p>
+<p>This approach provides several critical advantages over alternative solutions:</p>
+<ul>
+<li>Security through data-only payloads that cannot execute arbitrary code</li>
+<li>Native performance using platform-optimized rendering engines</li>
+<li>Consistent styling that matches host application design systems</li>
+<li>Accessibility compliance through native component implementations</li>
+<li>Cross-platform compatibility without platform-specific code generation</li>
+</ul>
+<h3>Security-First Design</h3>
+<p>The protocol&#x27;s security model is built on three fundamental principles that eliminate common attack vectors while preserving full expressiveness:</p>
+<h4>Pre-Approved Component Catalogs</h4>
+<p>Client applications maintain explicit whitelists of trusted UI components that agents can reference. This prevents injection attacks and ensures all rendered content uses approved implementations:</p>
+<pre><code>{   &quot;component_catalog&quot;: {     &quot;text_input&quot;: {       &quot;version&quot;: &quot;1.0&quot;,       &quot;properties&quot;: {         &quot;label&quot;: {           &quot;type&quot;: &quot;string&quot;,           &quot;required&quot;: true,           &quot;max_length&quot;: 100         },         &quot;value&quot;: {           &quot;type&quot;: &quot;string&quot;,           &quot;max_length&quot;: 1000         },         &quot;placeholder&quot;: {           &quot;type&quot;: &quot;string&quot;,           &quot;max_length&quot;: 50         },         &quot;validation&quot;: {           &quot;type&quot;: &quot;object&quot;,           &quot;properties&quot;: {             &quot;pattern&quot;: { &quot;type&quot;: &quot;string&quot; },             &quot;required&quot;: { &quot;type&quot;: &quot;boolean&quot; },             &quot;min_length&quot;: { &quot;type&quot;: &quot;number&quot; },             &quot;max_length&quot;: { &quot;type&quot;: &quot;number&quot; }           }         }       },       &quot;events&quot;: [&quot;change&quot;, &quot;blur&quot;, &quot;focus&quot;, &quot;enter&quot;],       &quot;accessibility&quot;: {         &quot;role&quot;: &quot;textbox&quot;,         &quot;aria_required&quot;: &quot;validation.required&quot;,         &quot;aria_invalid&quot;: &quot;validation.error_state&quot;       },       &quot;security&quot;: {         &quot;sanitize_input&quot;: true,         &quot;xss_protection&quot;: true,         &quot;sql_injection_protection&quot;: true       }     }   } }</code></pre>
+<h4>Data-Only Payloads</h4>
+<p>Agents send component descriptions and data, never executable code. This eliminates code injection vulnerabilities while enabling sophisticated interfaces:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_add&quot;,   &quot;surface_id&quot;: &quot;customer_dashboard&quot;,   &quot;component&quot;: {     &quot;id&quot;: &quot;revenue_chart_q4&quot;,     &quot;type&quot;: &quot;line_chart&quot;,     &quot;properties&quot;: {       &quot;title&quot;: &quot;Q4 Revenue Trends by Region&quot;,       &quot;data&quot;: [         {           &quot;label&quot;: &quot;North America&quot;,           &quot;values&quot;: [45.2, 48.1, 52.3, 49.7],           &quot;color&quot;: &quot;#1f77b4&quot;         },         {           &quot;label&quot;: &quot;Europe&quot;,            &quot;values&quot;: [38.5, 41.2, 44.8, 46.1],           &quot;color&quot;: &quot;#ff7f0e&quot;         },         {           &quot;label&quot;: &quot;Asia Pacific&quot;,           &quot;values&quot;: [28.7, 32.1, 35.9, 38.4],            &quot;color&quot;: &quot;#2ca02c&quot;         }       ],       &quot;x_axis&quot;: {         &quot;labels&quot;: [&quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;, &quot;Jan&quot;],         &quot;title&quot;: &quot;Month&quot;       },       &quot;y_axis&quot;: {         &quot;title&quot;: &quot;Revenue ($M)&quot;,         &quot;min&quot;: 0,         &quot;max&quot;: 60       },       &quot;interactive&quot;: true,       &quot;zoom_enabled&quot;: true,       &quot;export_options&quot;: [&quot;png&quot;, &quot;svg&quot;, &quot;csv&quot;]     }   } }</code></pre>
+<h4>Client-Side Rendering Control</h4>
+<p>Host applications control all rendering using their own trusted components, styling systems, and security policies. This ensures agent-generated content integrates seamlessly while maintaining security boundaries.</p>
+<h2>Message Structure and Component Model</h2>
+<p>A2UI defines a flat, streaming-friendly message format optimized for incremental generation by large language models. The component model supports complex layouts and interactions while remaining simple enough for AI agents to generate reliably and efficiently.</p>
+<h3>Core Message Types</h3>
+<p>A2UI specifies four primary message types that work together to create and maintain dynamic interfaces:</p>
+<h4>Surface Initialize</h4>
+<p>Establishes a new UI surface with layout parameters, styling constraints, and behavioral configuration:</p>
+<pre><code>{   &quot;type&quot;: &quot;surface_initialize&quot;,   &quot;surface_id&quot;: &quot;booking_interface_001&quot;,   &quot;properties&quot;: {     &quot;title&quot;: &quot;Restaurant Reservation&quot;,     &quot;layout&quot;: {       &quot;type&quot;: &quot;vertical_scroll&quot;,       &quot;max_width&quot;: &quot;800px&quot;,       &quot;padding&quot;: &quot;medium&quot;,       &quot;background&quot;: &quot;surface_primary&quot;     },     &quot;responsive&quot;: {       &quot;breakpoints&quot;: {         &quot;mobile&quot;: &quot;max-width: 768px&quot;,         &quot;tablet&quot;: &quot;max-width: 1024px&quot;,         &quot;desktop&quot;: &quot;min-width: 1025px&quot;       },       &quot;mobile_layout&quot;: &quot;single_column&quot;,       &quot;tablet_layout&quot;: &quot;two_column&quot;,       &quot;desktop_layout&quot;: &quot;three_column&quot;     },     &quot;accessibility&quot;: {       &quot;focus_management&quot;: &quot;auto&quot;,       &quot;screen_reader_announcements&quot;: true,       &quot;high_contrast_support&quot;: true,       &quot;keyboard_navigation&quot;: &quot;full&quot;     },     &quot;metadata&quot;: {       &quot;agent_id&quot;: &quot;restaurant_booking_agent_v3&quot;,       &quot;session_id&quot;: &quot;sess_booking_789&quot;,       &quot;created_at&quot;: &quot;2026-01-15T10:30:00Z&quot;     }   } }</code></pre>
+<h4>Component Add</h4>
+<p>Adds new components to the interface with full property specification and layout positioning:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_add&quot;,   &quot;surface_id&quot;: &quot;booking_interface_001&quot;,   &quot;component&quot;: {     &quot;id&quot;: &quot;date_picker_001&quot;,     &quot;type&quot;: &quot;date_input&quot;,     &quot;properties&quot;: {       &quot;label&quot;: &quot;Reservation Date&quot;,       &quot;value&quot;: &quot;2026-01-20&quot;,       &quot;min_date&quot;: &quot;2026-01-15&quot;,       &quot;max_date&quot;: &quot;2026-04-15&quot;,       &quot;required&quot;: true,       &quot;help_text&quot;: &quot;Select your preferred dining date&quot;,       &quot;validation&quot;: {         &quot;required_message&quot;: &quot;Please select a reservation date&quot;,         &quot;invalid_date_message&quot;: &quot;Please select a valid future date&quot;       }     },     &quot;layout&quot;: {       &quot;position&quot;: &quot;after:welcome_message&quot;,       &quot;width&quot;: &quot;full&quot;,       &quot;margin&quot;: { &quot;top&quot;: &quot;medium&quot;, &quot;bottom&quot;: &quot;small&quot; },       &quot;grid&quot;: {         &quot;column_start&quot;: 1,         &quot;column_span&quot;: 2,         &quot;row&quot;: &quot;auto&quot;       }     },     &quot;styling&quot;: {       &quot;theme&quot;: &quot;primary&quot;,       &quot;size&quot;: &quot;medium&quot;,       &quot;border_radius&quot;: &quot;standard&quot;     },     &quot;behavior&quot;: {       &quot;auto_focus&quot;: false,       &quot;tab_order&quot;: 1,       &quot;keyboard_shortcuts&quot;: [&quot;Enter&quot;],       &quot;touch_gestures&quot;: [&quot;tap&quot;, &quot;swipe&quot;]     }   } }</code></pre>
+<h4>Component Update</h4>
+<p>Modifies existing component properties with precise change specification and animation support:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_update&quot;,   &quot;surface_id&quot;: &quot;booking_interface_001&quot;,    &quot;component_id&quot;: &quot;availability_status&quot;,   &quot;updates&quot;: {     &quot;properties&quot;: {       &quot;status&quot;: &quot;available&quot;,       &quot;available_times&quot;: [         &quot;17:00&quot;, &quot;17:30&quot;, &quot;18:00&quot;, &quot;18:30&quot;,          &quot;19:00&quot;, &quot;19:30&quot;, &quot;20:00&quot;, &quot;20:30&quot;       ],       &quot;recommended_time&quot;: &quot;19:00&quot;,       &quot;last_updated&quot;: &quot;2026-01-15T10:35:42Z&quot;     },     &quot;styling&quot;: {       &quot;status_color&quot;: &quot;success&quot;,       &quot;highlight_recommended&quot;: true     },     &quot;animation&quot;: {       &quot;type&quot;: &quot;fade_in&quot;,       &quot;duration&quot;: &quot;300ms&quot;,       &quot;easing&quot;: &quot;ease_out&quot;     }   },   &quot;metadata&quot;: {     &quot;reason&quot;: &quot;availability_check_completed&quot;,     &quot;confidence&quot;: 0.94,     &quot;data_source&quot;: &quot;reservation_system_api&quot;   } }</code></pre>
+<h4>Component Remove</h4>
+<p>Removes components from the interface with optional animation and cleanup specification:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_remove&quot;,   &quot;surface_id&quot;: &quot;booking_interface_001&quot;,   &quot;component_id&quot;: &quot;loading_spinner_002&quot;,   &quot;options&quot;: {     &quot;animation&quot;: {       &quot;type&quot;: &quot;fade_out&quot;,       &quot;duration&quot;: &quot;200ms&quot;,       &quot;delay&quot;: &quot;100ms&quot;     },     &quot;cleanup&quot;: {       &quot;remove_event_listeners&quot;: true,       &quot;clear_cached_data&quot;: true,       &quot;notify_dependencies&quot;: [&quot;availability_status&quot;]     }   },   &quot;metadata&quot;: {     &quot;reason&quot;: &quot;data_loading_completed&quot;,     &quot;removed_at&quot;: &quot;2026-01-15T10:35:45Z&quot;   } }</code></pre>
+<h3>Component Catalog System</h3>
+<p>A2UI&#x27;s component catalog system enables flexibility while maintaining security through comprehensive component definitions that include properties, validation rules, styling guidelines, and behavioral specifications:</p>
+<pre><code>{   &quot;component_catalog&quot;: {     &quot;data_table&quot;: {       &quot;version&quot;: &quot;2.1.0&quot;,       &quot;description&quot;: &quot;Interactive data table with sorting, filtering, and pagination&quot;,       &quot;properties&quot;: {         &quot;columns&quot;: {           &quot;type&quot;: &quot;array&quot;,           &quot;required&quot;: true,           &quot;items&quot;: {             &quot;type&quot;: &quot;object&quot;,             &quot;properties&quot;: {               &quot;key&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;required&quot;: true },               &quot;label&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;required&quot;: true },               &quot;type&quot;: {                  &quot;type&quot;: &quot;string&quot;,                  &quot;enum&quot;: [&quot;text&quot;, &quot;number&quot;, &quot;date&quot;, &quot;boolean&quot;, &quot;currency&quot;]                },               &quot;sortable&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: true },               &quot;filterable&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: true },               &quot;width&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;pattern&quot;: &quot;^\d+(px|%|em|rem)$&quot; }             }           },           &quot;max_items&quot;: 20         },         &quot;data&quot;: {           &quot;type&quot;: &quot;array&quot;,           &quot;required&quot;: true,           &quot;max_items&quot;: 1000,           &quot;items&quot;: { &quot;type&quot;: &quot;object&quot; }         },         &quot;pagination&quot;: {           &quot;type&quot;: &quot;object&quot;,           &quot;properties&quot;: {             &quot;enabled&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: true },             &quot;page_size&quot;: {                &quot;type&quot;: &quot;number&quot;,                &quot;minimum&quot;: 5,                &quot;maximum&quot;: 100,                &quot;default&quot;: 25              },             &quot;show_size_selector&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: true }           }         },         &quot;selection&quot;: {           &quot;type&quot;: &quot;object&quot;,            &quot;properties&quot;: {             &quot;mode&quot;: {                &quot;type&quot;: &quot;string&quot;,                &quot;enum&quot;: [&quot;none&quot;, &quot;single&quot;, &quot;multiple&quot;],                &quot;default&quot;: &quot;none&quot;              },             &quot;checkbox_column&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: false }           }         }       },       &quot;events&quot;: [         &quot;row_click&quot;, &quot;row_select&quot;, &quot;sort&quot;, &quot;filter&quot;,          &quot;page_change&quot;, &quot;export&quot;, &quot;column_resize&quot;       ],       &quot;accessibility&quot;: {         &quot;role&quot;: &quot;table&quot;,         &quot;keyboard_navigation&quot;: true,         &quot;screen_reader_support&quot;: &quot;full&quot;,         &quot;focus_indicators&quot;: &quot;enhanced&quot;       },       &quot;performance&quot;: {         &quot;virtual_scrolling&quot;: true,         &quot;lazy_loading&quot;: true,         &quot;debounce_filters&quot;: 300       }     }   } }</code></pre>
+<p>This catalog-based approach ensures that agents can only request components the host application explicitly supports, while providing enough flexibility for complex use cases. The validation rules prevent malformed or potentially dangerous component specifications.</p>
+<h2>Cross-Platform Rendering</h2>
+<p>A2UI&#x27;s native-first approach enables consistent experiences across web, mobile, desktop, and emerging platforms. The same A2UI payload can generate Material Design components on Android, Cupertino elements on iOS, Fluent Design on Windows, and web-standard components in browsers, all while maintaining behavioral consistency and accessibility standards.</p>
+<h3>Platform-Specific Renderers</h3>
+<p>Google provides official renderer implementations for multiple platforms, with each renderer optimized for platform-specific performance characteristics and design guidelines:</p>
+<h4>Flutter Renderer</h4>
+<pre><code>// Flutter A2UI Renderer Implementation class A2UIFlutterRenderer extends StatefulWidget {   final A2UIMessage message;   final A2UIComponentCatalog catalog;   final Function(A2UIEvent) onEvent;    const A2UIFlutterRenderer({     Key? key,     required this.message,     required this.catalog,     required this.onEvent,   }) : super(key: key);    @override   _A2UIFlutterRendererState createState() =&gt; _A2UIFlutterRendererState(); }  class _A2UIFlutterRendererState extends State&lt;A2UIFlutterRenderer&gt; {   Map&lt;String, Widget&gt; _components = {};      @override   Widget build(BuildContext context) {     return StreamBuilder&lt;A2UIMessage&gt;(       stream: widget.messageStream,       builder: (context, snapshot) {         if (snapshot.hasData) {           _processMessage(snapshot.data!);         }                  return Column(           children: _buildComponentTree(),         );       },     );   }      void _processMessage(A2UIMessage message) {     switch (message.type) {       case A2UIMessageType.componentAdd:         _addComponent(message);         break;       case A2UIMessageType.componentUpdate:         _updateComponent(message);         break;       case A2UIMessageType.componentRemove:         _removeComponent(message);         break;     }   }      Widget _createNativeComponent(A2UIComponent component) {     switch (component.type) {       case &#x27;text_input&#x27;:         return TextFormField(           decoration: InputDecoration(             labelText: component.properties[&#x27;label&#x27;],             hintText: component.properties[&#x27;placeholder&#x27;],           ),           onChanged: (value) =&gt; _emitEvent(&#x27;change&#x27;, component.id, value),           validator: _buildValidator(component.properties[&#x27;validation&#x27;]),         );              case &#x27;button&#x27;:         return ElevatedButton(           onPressed: () =&gt; _emitEvent(&#x27;click&#x27;, component.id, null),           child: Text(component.properties[&#x27;label&#x27;]),           style: _buildButtonStyle(component.styling),         );                default:         return Container(); // Unknown component type     }   } }</code></pre>
+<h4>Web Components Renderer</h4>
+<pre><code>// Web Components A2UI Renderer class A2UIWebRenderer extends HTMLElement {   constructor() {     super();     this.attachShadow({ mode: &#x27;open&#x27; });     this.catalog = new Map();     this.components = new Map();     this.eventEmitter = new EventTarget();   }      connectedCallback() {     this.shadowRoot.innerHTML = `       &lt;style&gt;         :host {           display: block;           font-family: var(--a2ui-font-family, system-ui);         }         .a2ui-surface {           max-width: var(--a2ui-max-width, none);           margin: 0 auto;           padding: var(--a2ui-padding, 1rem);         }       &lt;/style&gt;       &lt;div class=&quot;a2ui-surface&quot; id=&quot;surface-container&quot;&gt;&lt;/div&gt;     `;   }      processMessage(message) {     switch (message.type) {       case &#x27;surface_initialize&#x27;:         this.initializeSurface(message);         break;       case &#x27;component_add&#x27;:         this.addComponent(message);         break;       case &#x27;component_update&#x27;:         this.updateComponent(message);         break;       case &#x27;component_remove&#x27;:         this.removeComponent(message);         break;     }   }      addComponent(message) {     const component = message.component;     const element = this.createNativeElement(component);          if (element) {       this.components.set(component.id, element);       this.insertComponent(element, component.layout);     }   }      createNativeElement(component) {     const catalogEntry = this.catalog.get(component.type);     if (!catalogEntry) {       console.warn(`Unknown component type: ${component.type}`);       return null;     }          switch (component.type) {       case &#x27;text_input&#x27;:         return this.createTextInput(component);       case &#x27;button&#x27;:         return this.createButton(component);       case &#x27;data_table&#x27;:         return this.createDataTable(component);       default:         return null;     }   }      createTextInput(component) {     const wrapper = document.createElement(&#x27;div&#x27;);     wrapper.className = &#x27;a2ui-text-input-wrapper&#x27;;          const label = document.createElement(&#x27;label&#x27;);     label.textContent = component.properties.label;     label.htmlFor = component.id;          const input = document.createElement(&#x27;input&#x27;);     input.type = &#x27;text&#x27;;     input.id = component.id;     input.value = component.properties.value || &#x27;&#x27;;     input.placeholder = component.properties.placeholder || &#x27;&#x27;;     input.required = component.properties.validation?.required || false;          input.addEventListener(&#x27;change&#x27;, (e) =&gt; {       this.emitEvent(&#x27;change&#x27;, component.id, {         value: e.target.value       });     });          wrapper.appendChild(label);     wrapper.appendChild(input);          return wrapper;   } }</code></pre>
+<h3>Responsive Design Patterns</h3>
+<p>A2UI incorporates responsive design principles through adaptive layout specifications that enable single interface definitions to work effectively across all screen sizes and device capabilities:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_add&quot;,   &quot;component&quot;: {     &quot;id&quot;: &quot;analytics_dashboard&quot;,     &quot;type&quot;: &quot;dashboard_grid&quot;,     &quot;properties&quot;: {       &quot;title&quot;: &quot;Sales Analytics Dashboard&quot;,       &quot;components&quot;: [         {           &quot;id&quot;: &quot;revenue_chart&quot;,           &quot;type&quot;: &quot;line_chart&quot;,           &quot;grid_area&quot;: &quot;chart-primary&quot;         },         {           &quot;id&quot;: &quot;metrics_summary&quot;,            &quot;type&quot;: &quot;metric_cards&quot;,           &quot;grid_area&quot;: &quot;metrics&quot;         },         {           &quot;id&quot;: &quot;regional_breakdown&quot;,           &quot;type&quot;: &quot;pie_chart&quot;,            &quot;grid_area&quot;: &quot;chart-secondary&quot;         }       ]     },     &quot;responsive_behavior&quot;: {       &quot;mobile&quot;: {         &quot;layout&quot;: &quot;single_column&quot;,         &quot;grid_template&quot;: &quot;&quot;metrics&quot; &quot;chart-primary&quot; &quot;chart-secondary&quot;&quot;,         &quot;component_modifications&quot;: {           &quot;revenue_chart&quot;: {             &quot;height&quot;: &quot;300px&quot;,             &quot;controls&quot;: &quot;minimal&quot;           }         }       },       &quot;tablet&quot;: {         &quot;layout&quot;: &quot;two_column&quot;,          &quot;grid_template&quot;: &quot;&quot;metrics metrics&quot; &quot;chart-primary chart-secondary&quot;&quot;,         &quot;component_modifications&quot;: {           &quot;revenue_chart&quot;: {             &quot;height&quot;: &quot;400px&quot;,             &quot;controls&quot;: &quot;standard&quot;           }         }       },       &quot;desktop&quot;: {         &quot;layout&quot;: &quot;three_column&quot;,         &quot;grid_template&quot;: &quot;&quot;metrics chart-primary chart-secondary&quot;&quot;,         &quot;component_modifications&quot;: {           &quot;revenue_chart&quot;: {             &quot;height&quot;: &quot;500px&quot;,             &quot;controls&quot;: &quot;full&quot;           }         }       }     },     &quot;breakpoints&quot;: {       &quot;mobile&quot;: &quot;max-width: 768px&quot;,       &quot;tablet&quot;: &quot;min-width: 769px and max-width: 1024px&quot;,       &quot;desktop&quot;: &quot;min-width: 1025px&quot;     }   } }</code></pre>
+<h2>Event Handling and Interaction</h2>
+<p>A2UI defines a comprehensive event model that enables rich interactivity while maintaining the security boundaries between agent-generated content and host applications. User interactions trigger standardized events that can be processed by agents to update interface state, trigger business logic, or coordinate with other system components.</p>
+<h3>Event Types and Handling</h3>
+<p>A2UI supports a comprehensive range of interaction events, each with specific data structures and handling requirements:</p>
+<ul>
+<li>User Input Events: Text changes, selections, form submissions with validation results</li>
+<li>Navigation Events: Button clicks, link activations, tab switches, menu selections</li>
+<li>Data Events: Filter changes, sort operations, pagination, search queries</li>
+<li>Lifecycle Events: Component mount/unmount, visibility changes, focus events</li>
+<li>Gesture Events: Touch, swipe, drag, pinch-to-zoom for mobile interfaces</li>
+<li>Accessibility Events: Screen reader interactions, keyboard navigation, voice commands</li>
+</ul>
+<h3>Event Processing Example</h3>
+<pre><code>{   &quot;type&quot;: &quot;user_interaction&quot;,   &quot;surface_id&quot;: &quot;booking_interface_001&quot;,   &quot;component_id&quot;: &quot;submit_button_001&quot;,   &quot;event&quot;: &quot;click&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:35:42Z&quot;,   &quot;data&quot;: {     &quot;form_data&quot;: {       &quot;reservation_date&quot;: &quot;2026-01-20&quot;,       &quot;party_size&quot;: 4,       &quot;time_preference&quot;: &quot;19:00&quot;,       &quot;dietary_restrictions&quot;: [&quot;vegetarian&quot;],       &quot;special_requests&quot;: &quot;Window table if available&quot;,       &quot;contact_phone&quot;: &quot;+1-555-123-4567&quot;,       &quot;contact_email&quot;: &quot;user@example.com&quot;     },     &quot;validation_results&quot;: {       &quot;is_valid&quot;: true,       &quot;errors&quot;: [],       &quot;warnings&quot;: [         {           &quot;field&quot;: &quot;time_preference&quot;,           &quot;message&quot;: &quot;Popular time slot - limited availability&quot;,           &quot;code&quot;: &quot;HIGH_DEMAND_WARNING&quot;         }       ]     },     &quot;user_context&quot;: {       &quot;session_duration&quot;: 180,       &quot;form_completion_time&quot;: 45,       &quot;modification_count&quot;: 3,       &quot;previous_bookings&quot;: 5     }   },   &quot;metadata&quot;: {     &quot;event_sequence&quot;: 47,     &quot;user_agent&quot;: &quot;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0)&quot;,     &quot;ip_address&quot;: &quot;192.168.1.100&quot;,     &quot;client_version&quot;: &quot;1.2.0&quot;   } }</code></pre>
+<h3>Event Processing Pipeline</h3>
+<p>Event handling maintains a clear separation between UI state (managed by the client) and business logic (handled by agents). This architecture enables responsive interfaces while preserving security boundaries:</p>
+<pre><code>// A2UI Event Processing Agent Implementation class A2UIEventProcessor {   constructor(agentConfig) {     this.agent = agentConfig.agent;     this.eventHandlers = new Map();     this.validationRules = agentConfig.validationRules;     this.businessLogic = agentConfig.businessLogic;   }      async processEvent(event) {     try {       // 1. Validate event structure and authorization       const validation = await this.validateEvent(event);       if (!validation.isValid) {         return this.createErrorResponse(validation.errors);       }              // 2. Apply business logic processing       const businessResult = await this.businessLogic.process(event);              // 3. Generate UI updates based on results       const uiUpdates = await this.generateUIUpdates(businessResult);              // 4. Return complete response       return {         status: &#x27;success&#x27;,         ui_updates: uiUpdates,         business_result: businessResult,         next_actions: this.determineNextActions(businessResult)       };            } catch (error) {       return this.handleProcessingError(error);     }   }      async generateUIUpdates(businessResult) {     const updates = [];          if (businessResult.type === &#x27;reservation_confirmed&#x27;) {       // Update confirmation display       updates.push({         type: &#x27;component_update&#x27;,         component_id: &#x27;booking_status&#x27;,         updates: {           properties: {             status: &#x27;confirmed&#x27;,             confirmation_number: businessResult.confirmationNumber,             details: businessResult.reservationDetails           },           styling: {             status_color: &#x27;success&#x27;,             animation: &#x27;success_pulse&#x27;           }         }       });              // Add next steps component       updates.push({         type: &#x27;component_add&#x27;,          component: {           id: &#x27;next_steps_card&#x27;,           type: &#x27;info_card&#x27;,           properties: {             title: &#x27;Reservation Confirmed!&#x27;,             content: &#x27;Check your email for confirmation details.&#x27;,             actions: [               {                 label: &#x27;Add to Calendar&#x27;,                 action: &#x27;calendar_add&#x27;,                 data: businessResult.calendarEvent               },               {                 label: &#x27;Share Reservation&#x27;,                 action: &#x27;share&#x27;,                 data: businessResult.shareData               }             ]           }         }       });     }          return updates;   } }</code></pre>
+<h2>Advanced Features and Capabilities</h2>
+<p>A2UI incorporates several advanced features that enable sophisticated user experiences while maintaining the core principles of security and cross-platform compatibility.</p>
+<h3>Progressive Enhancement and Streaming</h3>
+<p>A2UI supports progressive enhancement where agents can build complex interfaces incrementally as they gather information or process complex requests:</p>
+<pre><code>// Progressive UI Construction Example {   &quot;message_sequence&quot;: [     {       &quot;type&quot;: &quot;surface_initialize&quot;,       &quot;surface_id&quot;: &quot;travel_planner&quot;,       &quot;properties&quot;: {         &quot;title&quot;: &quot;Travel Planning Assistant&quot;,         &quot;loading_state&quot;: &quot;processing_request&quot;       }     },     {       &quot;type&quot;: &quot;component_add&quot;,       &quot;component&quot;: {         &quot;id&quot;: &quot;destination_input&quot;,         &quot;type&quot;: &quot;text_input&quot;,          &quot;properties&quot;: {           &quot;label&quot;: &quot;Where would you like to go?&quot;,           &quot;placeholder&quot;: &quot;Enter city or country&quot;         }       }     },     {       &quot;type&quot;: &quot;component_add&quot;,       &quot;component&quot;: {         &quot;id&quot;: &quot;loading_destinations&quot;,         &quot;type&quot;: &quot;loading_spinner&quot;,         &quot;properties&quot;: {           &quot;message&quot;: &quot;Finding destinations...&quot;         }       }     },     {       &quot;type&quot;: &quot;component_remove&quot;,       &quot;component_id&quot;: &quot;loading_destinations&quot;     },     {       &quot;type&quot;: &quot;component_add&quot;,       &quot;component&quot;: {         &quot;id&quot;: &quot;destination_suggestions&quot;,         &quot;type&quot;: &quot;suggestion_cards&quot;,         &quot;properties&quot;: {           &quot;suggestions&quot;: [             {               &quot;title&quot;: &quot;Paris, France&quot;,               &quot;description&quot;: &quot;City of Light with world-class museums&quot;,               &quot;image&quot;: &quot;/images/paris.jpg&quot;,               &quot;price_range&quot;: &quot;$$$&quot;             }           ]         }       }     }   ] }</code></pre>
+<h3>Conditional Logic and Dynamic Behavior</h3>
+<p>Components can include conditional logic that enables dynamic behavior without requiring agent intervention for every interaction:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_add&quot;,   &quot;component&quot;: {     &quot;id&quot;: &quot;shipping_calculator&quot;,     &quot;type&quot;: &quot;form_section&quot;,     &quot;properties&quot;: {       &quot;title&quot;: &quot;Shipping Options&quot;,       &quot;fields&quot;: [         {           &quot;id&quot;: &quot;shipping_country&quot;,           &quot;type&quot;: &quot;select&quot;,           &quot;label&quot;: &quot;Country&quot;,           &quot;options&quot;: [&quot;US&quot;, &quot;CA&quot;, &quot;UK&quot;, &quot;EU&quot;],           &quot;required&quot;: true         },         {           &quot;id&quot;: &quot;shipping_speed&quot;,           &quot;type&quot;: &quot;radio_group&quot;,            &quot;label&quot;: &quot;Shipping Speed&quot;,           &quot;conditional&quot;: {             &quot;show_when&quot;: &quot;shipping_country != &#x27;&#x27;&quot;,             &quot;options_depend_on&quot;: &quot;shipping_country&quot;           },           &quot;options&quot;: {             &quot;US&quot;: [               {&quot;value&quot;: &quot;standard&quot;, &quot;label&quot;: &quot;Standard (5-7 days)&quot;, &quot;price&quot;: 9.99},               {&quot;value&quot;: &quot;express&quot;, &quot;label&quot;: &quot;Express (2-3 days)&quot;, &quot;price&quot;: 19.99},               {&quot;value&quot;: &quot;overnight&quot;, &quot;label&quot;: &quot;Overnight&quot;, &quot;price&quot;: 39.99}             ],             &quot;CA&quot;: [               {&quot;value&quot;: &quot;standard&quot;, &quot;label&quot;: &quot;Standard (7-10 days)&quot;, &quot;price&quot;: 12.99},               {&quot;value&quot;: &quot;express&quot;, &quot;label&quot;: &quot;Express (3-5 days)&quot;, &quot;price&quot;: 24.99}             ]           }         },         {           &quot;id&quot;: &quot;total_cost&quot;,           &quot;type&quot;: &quot;calculated_field&quot;,           &quot;label&quot;: &quot;Total Shipping Cost&quot;,           &quot;calculation&quot;: &quot;product_weight * base_rate + shipping_speed.price&quot;,           &quot;display_format&quot;: &quot;currency&quot;         }       ]     }   } }</code></pre>
+<h3>Internationalization and Accessibility</h3>
+<p>A2UI provides comprehensive support for internationalization and accessibility, ensuring agent-generated interfaces work effectively for users worldwide:</p>
+<pre><code>{   &quot;type&quot;: &quot;component_add&quot;,   &quot;component&quot;: {     &quot;id&quot;: &quot;multilingual_form&quot;,     &quot;type&quot;: &quot;form&quot;,     &quot;properties&quot;: {       &quot;title&quot;: {         &quot;en&quot;: &quot;Contact Information&quot;,         &quot;es&quot;: &quot;Información de Contacto&quot;,          &quot;fr&quot;: &quot;Informations de Contact&quot;,         &quot;de&quot;: &quot;Kontaktinformationen&quot;       },       &quot;fields&quot;: [         {           &quot;id&quot;: &quot;name_field&quot;,           &quot;type&quot;: &quot;text_input&quot;,           &quot;label&quot;: {             &quot;en&quot;: &quot;Full Name&quot;,             &quot;es&quot;: &quot;Nombre Completo&quot;,             &quot;fr&quot;: &quot;Nom Complet&quot;,              &quot;de&quot;: &quot;Vollständiger Name&quot;           },           &quot;placeholder&quot;: {             &quot;en&quot;: &quot;Enter your full name&quot;,             &quot;es&quot;: &quot;Ingrese su nombre completo&quot;,             &quot;fr&quot;: &quot;Entrez votre nom complet&quot;,             &quot;de&quot;: &quot;Geben Sie Ihren vollständigen Namen ein&quot;           },           &quot;accessibility&quot;: {             &quot;aria_label&quot;: &quot;Full name input field&quot;,             &quot;aria_describedby&quot;: &quot;name_help_text&quot;,             &quot;required&quot;: true           }         }       ],       &quot;localization&quot;: {         &quot;text_direction&quot;: &quot;auto&quot;,         &quot;number_format&quot;: &quot;locale&quot;,         &quot;date_format&quot;: &quot;locale&quot;,         &quot;currency_symbol&quot;: &quot;locale&quot;       },       &quot;accessibility&quot;: {         &quot;focus_management&quot;: &quot;enhanced&quot;,         &quot;screen_reader_optimized&quot;: true,         &quot;keyboard_shortcuts&quot;: {           &quot;submit&quot;: [&quot;Enter&quot;, &quot;Cmd+Enter&quot;],           &quot;clear&quot;: [&quot;Escape&quot;],           &quot;next_field&quot;: [&quot;Tab&quot;],           &quot;previous_field&quot;: [&quot;Shift+Tab&quot;]         },         &quot;high_contrast_support&quot;: true,         &quot;font_scaling&quot;: &quot;responsive&quot;       }     }   } }</code></pre>
+          <nav class="nav">
+            <a href="04_chapter.html" class="nav__btn nav__btn--secondary">← Previous</a>
+            <a href="01_chapter.html" class="nav__btn nav__btn--secondary">Contents</a>
+            <a href="06_chapter.html" class="nav__btn">Next Chapter →</a>
+          </nav>
+        </article>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

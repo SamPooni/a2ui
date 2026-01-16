@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -550,7 +565,70 @@ body {
 <li>Integration with external data sources for enriched customer profiles</li>
 <li>Predictive analytics dashboards showing pipeline health and forecasts</li>
 </ul>
-<pre><code>// Example CRM A2UI component generation {   &quot;type&quot;: &quot;component_add&quot;,   &quot;component&quot;: {     &quot;id&quot;: &quot;lead_qualification_form&quot;,     &quot;type&quot;: &quot;adaptive_form&quot;,     &quot;properties&quot;: {       &quot;title&quot;: &quot;Lead Qualification - TechCorp Inc.&quot;,       &quot;context&quot;: {         &quot;company&quot;: &quot;TechCorp Inc.&quot;,         &quot;industry&quot;: &quot;Software Development&quot;,         &quot;company_size&quot;: &quot;500-1000 employees&quot;,         &quot;previous_interactions&quot;: 3       },       &quot;sections&quot;: [         {           &quot;id&quot;: &quot;company_info&quot;,           &quot;title&quot;: &quot;Company Details&quot;,           &quot;fields&quot;: [             {               &quot;type&quot;: &quot;text_display&quot;,               &quot;label&quot;: &quot;Company&quot;,               &quot;value&quot;: &quot;TechCorp Inc. (Software, 500-1000 employees)&quot;             },             {               &quot;type&quot;: &quot;select&quot;,               &quot;id&quot;: &quot;decision_maker&quot;,               &quot;label&quot;: &quot;Primary Decision Maker&quot;,               &quot;options&quot;: [                 &quot;CTO - Sarah Johnson&quot;,                 &quot;Engineering Manager - Mike Chen&quot;,                 &quot;VP Engineering - Lisa Wang&quot;               ]             }           ]         },         {           &quot;id&quot;: &quot;requirements&quot;,           &quot;title&quot;: &quot;Requirements Assessment&quot;,           &quot;fields&quot;: [             {               &quot;type&quot;: &quot;checkbox_group&quot;,               &quot;id&quot;: &quot;pain_points&quot;,               &quot;label&quot;: &quot;Current Challenges&quot;,               &quot;options&quot;: [                 &quot;Development velocity&quot;,                 &quot;Code quality&quot;,                 &quot;Team collaboration&quot;,                 &quot;Deployment complexity&quot;               ]             },             {               &quot;type&quot;: &quot;range_input&quot;,               &quot;id&quot;: &quot;budget_range&quot;,               &quot;label&quot;: &quot;Annual Budget Range&quot;,               &quot;min&quot;: 50000,               &quot;max&quot;: 500000,               &quot;step&quot;: 25000,               &quot;format&quot;: &quot;currency&quot;             }           ]         }       ]     }   } }</code></pre>
+<pre><code class="language-javascript">// Example CRM A2UI component generation {
+    &quot;type&quot;: &quot;component_add&quot;,
+    &quot;component&quot;: {
+      &quot;id&quot;: &quot;lead_qualification_form&quot;,
+      &quot;type&quot;: &quot;adaptive_form&quot;,
+      &quot;properties&quot;: {
+        &quot;title&quot;: &quot;Lead Qualification - TechCorp Inc.&quot;,
+        &quot;context&quot;: {
+        &quot;company&quot;: &quot;TechCorp Inc.&quot;,
+        &quot;industry&quot;: &quot;Software Development&quot;,
+        &quot;company_size&quot;: &quot;500-1000 employees&quot;,
+        &quot;previous_interactions&quot;: 3
+        },
+        &quot;sections&quot;: [
+        {
+        &quot;id&quot;: &quot;company_info&quot;,
+        &quot;title&quot;: &quot;Company Details&quot;,
+        &quot;fields&quot;: [
+        {
+        &quot;type&quot;: &quot;text_display&quot;,
+        &quot;label&quot;: &quot;Company&quot;,
+        &quot;value&quot;: &quot;TechCorp Inc. (Software, 500-1000 employees)&quot;
+        },
+        {
+        &quot;type&quot;: &quot;select&quot;,
+        &quot;id&quot;: &quot;decision_maker&quot;,
+        &quot;label&quot;: &quot;Primary Decision Maker&quot;,
+        &quot;options&quot;: [
+        &quot;CTO - Sarah Johnson&quot;,
+        &quot;Engineering Manager - Mike Chen&quot;,
+        &quot;VP Engineering - Lisa Wang&quot;
+        ]
+        }
+        ]
+        },
+        {
+        &quot;id&quot;: &quot;requirements&quot;,
+        &quot;title&quot;: &quot;Requirements Assessment&quot;,
+        &quot;fields&quot;: [
+        {
+        &quot;type&quot;: &quot;checkbox_group&quot;,
+        &quot;id&quot;: &quot;pain_points&quot;,
+        &quot;label&quot;: &quot;Current Challenges&quot;,
+        &quot;options&quot;: [
+        &quot;Development velocity&quot;,
+        &quot;Code quality&quot;,
+        &quot;Team collaboration&quot;,
+        &quot;Deployment complexity&quot;
+        ]
+        },
+        {
+        &quot;type&quot;: &quot;range_input&quot;,
+        &quot;id&quot;: &quot;budget_range&quot;,
+        &quot;label&quot;: &quot;Annual Budget Range&quot;,
+        &quot;min&quot;: 50000,
+        &quot;max&quot;: 500000,
+        &quot;step&quot;: 25000,
+        &quot;format&quot;: &quot;currency&quot;
+        }
+        ]
+        }
+        ]
+      }
+    } }</code></pre>
 <h3>Human Resources and Talent Management</h3>
 <ul>
 <li>Adaptive job posting forms optimized for specific roles and requirements</li>
@@ -601,5 +679,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

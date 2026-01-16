@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -542,7 +557,45 @@ body {
 <li>Presentation Layer (A2UI): Component rendering, layout, user interactions</li>
 </ul>
 <h2>Message Flow Integration</h2>
-<pre><code>// Complete integration flow example // 1. User input via AG-UI {   &quot;type&quot;: &quot;HUMAN_MESSAGE&quot;,   &quot;content&quot;: &quot;Book a table for 4 tomorrow at 7pm&quot;,   &quot;thread_id&quot;: &quot;conversation_001&quot; }  // 2. Agent processing and A2UI generation {   &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,   &quot;payload&quot;: {     &quot;type&quot;: &quot;surface_initialize&quot;,     &quot;surface_id&quot;: &quot;booking_form&quot;,     &quot;properties&quot;: {       &quot;title&quot;: &quot;Restaurant Reservation&quot;,       &quot;layout&quot;: &quot;vertical_flow&quot;     }   } }  // 3. Progressive component addition {   &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,   &quot;payload&quot;: {     &quot;type&quot;: &quot;component_add&quot;,     &quot;component&quot;: {       &quot;id&quot;: &quot;party_size&quot;,       &quot;type&quot;: &quot;number_input&quot;,       &quot;properties&quot;: {         &quot;label&quot;: &quot;Party Size&quot;,         &quot;value&quot;: 4,         &quot;min&quot;: 1,         &quot;max&quot;: 12       }     }   } }  // 4. User interaction back to agent {   &quot;type&quot;: &quot;USER_INTERACTION&quot;,   &quot;component_id&quot;: &quot;submit_reservation&quot;,   &quot;event&quot;: &quot;click&quot;,   &quot;data&quot;: {     &quot;party_size&quot;: 4,     &quot;date&quot;: &quot;2026-01-16&quot;,     &quot;time&quot;: &quot;19:00&quot;,     &quot;preferences&quot;: [&quot;window_table&quot;]   } }</code></pre>
+<pre><code class="language-javascript">// Complete integration flow example // 1. User input via AG-UI {
+    &quot;type&quot;: &quot;HUMAN_MESSAGE&quot;,
+    &quot;content&quot;: &quot;Book a table for 4 tomorrow at 7pm&quot;,
+    &quot;thread_id&quot;: &quot;conversation_001&quot; }
+  // 2. Agent processing and A2UI generation {
+    &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,
+    &quot;payload&quot;: {
+      &quot;type&quot;: &quot;surface_initialize&quot;,
+      &quot;surface_id&quot;: &quot;booking_form&quot;,
+      &quot;properties&quot;: {
+        &quot;title&quot;: &quot;Restaurant Reservation&quot;,
+        &quot;layout&quot;: &quot;vertical_flow&quot;
+      }
+    } }
+  // 3. Progressive component addition {
+    &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,
+    &quot;payload&quot;: {
+      &quot;type&quot;: &quot;component_add&quot;,
+      &quot;component&quot;: {
+        &quot;id&quot;: &quot;party_size&quot;,
+        &quot;type&quot;: &quot;number_input&quot;,
+        &quot;properties&quot;: {
+        &quot;label&quot;: &quot;Party Size&quot;,
+        &quot;value&quot;: 4,
+        &quot;min&quot;: 1,
+        &quot;max&quot;: 12
+        }
+      }
+    } }
+  // 4. User interaction back to agent {
+    &quot;type&quot;: &quot;USER_INTERACTION&quot;,
+    &quot;component_id&quot;: &quot;submit_reservation&quot;,
+    &quot;event&quot;: &quot;click&quot;,
+    &quot;data&quot;: {
+      &quot;party_size&quot;: 4,
+      &quot;date&quot;: &quot;2026-01-16&quot;,
+      &quot;time&quot;: &quot;19:00&quot;,
+      &quot;preferences&quot;: [&quot;window_table&quot;]
+    } }</code></pre>
 <h2>State Synchronization Strategies</h2>
 <p>Managing state consistency between agents, applications, and generated UIs requires sophisticated synchronization strategies:</p>
 <ul>
@@ -570,5 +623,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

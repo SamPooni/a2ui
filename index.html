@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -697,8 +712,20 @@ body {
         <div class="card__arrow"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></div>
       </a>
         </div>
+      
+      <footer class="copyright" style="margin-top: 80px; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+        <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 12px;">
+          © 2026 <strong style="color: #60a5fa;">Subramaniyam Pooni</strong> | <strong style="color: #22d3ee;">CSSQUAREDB Technologies</strong>
+        </p>
+        <p style="color: rgba(255,255,255,0.35); font-size: 0.75rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+          All rights reserved. This report is provided for informational purposes only. AG-UI is a trademark of CopilotKit. A2UI is a trademark of Google LLC. This is an independent analysis, not affiliated with or endorsed by Google, CopilotKit, or any company mentioned herein.
+        </p>
+      </footer>
+
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

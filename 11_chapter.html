@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -543,9 +558,94 @@ body {
 <li>Community-driven best practices and example repositories</li>
 </ul>
 <h2>Development Tools and Debugging</h2>
-<pre><code>// AG-UI Debug Tools integration import { AGUIDebugger, A2UIInspector } from &#x27;@copilotkit/debug-tools&#x27;;  function MyApp() {   return (     &lt;div&gt;       &lt;CopilotProvider config={config}&gt;         &lt;AgentInterface /&gt;                  {process.env.NODE_ENV === &#x27;development&#x27; &amp;&amp; (           &lt;&gt;             &lt;AGUIDebugger               showEventStream={true}               showStateChanges={true}               showPerformanceMetrics={true}               exportLogs={true}               filterEvents={[&#x27;TEXT_MESSAGE_CONTENT&#x27;, &#x27;TOOL_CALL_START&#x27;]}             /&gt;                          &lt;A2UIInspector               highlightComponents={true}               showComponentTree={true}               validateCatalog={true}               performanceMonitoring={true}             /&gt;           &lt;/&gt;         )}       &lt;/CopilotProvider&gt;     &lt;/div&gt;   ); }  // Custom debugging hooks function useAGUIDebug() {   const [eventLog, setEventLog] = useState&lt;AGUIEvent[]&gt;([]);      useEffect(() =&gt; {     const unsubscribe = AGUIDebugger.subscribe((event) =&gt; {       setEventLog(prev =&gt; [...prev, event].slice(-100)); // Keep last 100 events     });          return unsubscribe;   }, []);      return {     events: eventLog,     clearLog: () =&gt; setEventLog([]),     exportLog: () =&gt; AGUIDebugger.export(eventLog)   }; }</code></pre>
+<pre><code class="language-javascript">// AG-UI Debug Tools integration import { AGUIDebugger, A2UIInspector } from &#x27;@copilotkit/debug-tools&#x27;;
+  function MyApp() {
+    return (
+      &lt;div&gt;
+        &lt;CopilotProvider config={config}&gt;
+        &lt;AgentInterface /&gt;
+        {process.env.NODE_ENV === &#x27;development&#x27; &amp;&amp; (
+        &lt;&gt;
+        &lt;AGUIDebugger
+        showEventStream={true}
+        showStateChanges={true}
+        showPerformanceMetrics={true}
+        exportLogs={true}
+        filterEvents={[&#x27;TEXT_MESSAGE_CONTENT&#x27;, &#x27;TOOL_CALL_START&#x27;]}
+        /&gt;
+        &lt;A2UIInspector
+        highlightComponents={true}
+        showComponentTree={true}
+        validateCatalog={true}
+        performanceMonitoring={true}
+        /&gt;
+        &lt;/&gt;
+        )}
+        &lt;/CopilotProvider&gt;
+      &lt;/div&gt;
+    ); }
+  // Custom debugging hooks function useAGUIDebug() {
+    const [eventLog, setEventLog] = useState&lt;AGUIEvent[]&gt;([]);
+      useEffect(() =&gt; {
+      const unsubscribe = AGUIDebugger.subscribe((event) =&gt; {
+        setEventLog(prev =&gt; [...prev, event].slice(-100)); // Keep last 100 events
+      });
+        return unsubscribe;
+    }, []);
+      return {
+      events: eventLog,
+      clearLog: () =&gt; setEventLog([]),
+      exportLog: () =&gt; AGUIDebugger.export(eventLog)
+    }; }</code></pre>
 <h2>Testing and Quality Assurance</h2>
-<pre><code>// Testing utilities for AG-UI + A2UI applications import { AGUITestHarness, A2UITestRenderer } from &#x27;@copilotkit/testing&#x27;; import { render, screen, fireEvent } from &#x27;@testing-library/react&#x27;;  describe(&#x27;Restaurant Booking Agent&#x27;, () =&gt; {   let testHarness: AGUITestHarness;      beforeEach(() =&gt; {     testHarness = new AGUITestHarness({       mockAgent: true,       componentCatalog: testComponentCatalog     });   });      test(&#x27;generates booking form for user request&#x27;, async () =&gt; {     // Send user message     testHarness.sendMessage({       type: &#x27;HUMAN_MESSAGE&#x27;,       content: &#x27;Book a table for 4 tomorrow at 7pm&#x27;     });          // Wait for A2UI response     const uiUpdate = await testHarness.waitForGenerativeUI();          expect(uiUpdate.type).toBe(&#x27;surface_initialize&#x27;);     expect(uiUpdate.properties.title).toBe(&#x27;Restaurant Reservation&#x27;);          // Verify form components are generated     const components = await testHarness.waitForComponents();     expect(components).toHaveLength(4); // party size, date, time, submit          const partyComponent = components.find(c =&gt; c.id === &#x27;party_size&#x27;);     expect(partyComponent.properties.value).toBe(4);   });      test(&#x27;handles form submission correctly&#x27;, async () =&gt; {     // Setup initial form     await testHarness.initializeBookingForm();          // Fill out form     testHarness.updateComponent(&#x27;party_size&#x27;, { value: 6 });     testHarness.updateComponent(&#x27;date&#x27;, { value: &#x27;2026-01-17&#x27; });     testHarness.updateComponent(&#x27;time&#x27;, { value: &#x27;19:30&#x27; });          // Submit form     testHarness.triggerEvent(&#x27;submit_button&#x27;, &#x27;click&#x27;);          // Verify booking processing     const result = await testHarness.waitForBookingResult();     expect(result.status).toBe(&#x27;confirmed&#x27;);     expect(result.party_size).toBe(6);   });      test(&#x27;handles validation errors gracefully&#x27;, async () =&gt; {     await testHarness.initializeBookingForm();          // Submit form with missing required fields     testHarness.triggerEvent(&#x27;submit_button&#x27;, &#x27;click&#x27;);          // Verify validation errors are shown     const errorUI = await testHarness.waitForValidationErrors();     expect(errorUI.errors).toContain(&#x27;date_required&#x27;);     expect(errorUI.errors).toContain(&#x27;time_required&#x27;);   }); });</code></pre>
+<pre><code class="language-javascript">// Testing utilities for AG-UI + A2UI applications import { AGUITestHarness, A2UITestRenderer } from &#x27;@copilotkit/testing&#x27;; import { render, screen, fireEvent } from &#x27;@testing-library/react&#x27;;
+  describe(&#x27;Restaurant Booking Agent&#x27;, () =&gt; {
+    let testHarness: AGUITestHarness;
+      beforeEach(() =&gt; {
+      testHarness = new AGUITestHarness({
+        mockAgent: true,
+        componentCatalog: testComponentCatalog
+      });
+    });
+      test(&#x27;generates booking form for user request&#x27;, async () =&gt; {
+      // Send user message
+      testHarness.sendMessage({
+        type: &#x27;HUMAN_MESSAGE&#x27;,
+        content: &#x27;Book a table for 4 tomorrow at 7pm&#x27;
+      });
+        // Wait for A2UI response
+      const uiUpdate = await testHarness.waitForGenerativeUI();
+        expect(uiUpdate.type).toBe(&#x27;surface_initialize&#x27;);
+      expect(uiUpdate.properties.title).toBe(&#x27;Restaurant Reservation&#x27;);
+        // Verify form components are generated
+      const components = await testHarness.waitForComponents();
+      expect(components).toHaveLength(4); // party size, date, time, submit
+        const partyComponent = components.find(c =&gt; c.id === &#x27;party_size&#x27;);
+      expect(partyComponent.properties.value).toBe(4);
+    });
+      test(&#x27;handles form submission correctly&#x27;, async () =&gt; {
+      // Setup initial form
+      await testHarness.initializeBookingForm();
+        // Fill out form
+      testHarness.updateComponent(&#x27;party_size&#x27;, { value: 6 });
+      testHarness.updateComponent(&#x27;date&#x27;, { value: &#x27;2026-01-17&#x27; });
+      testHarness.updateComponent(&#x27;time&#x27;, { value: &#x27;19:30&#x27; });
+        // Submit form
+      testHarness.triggerEvent(&#x27;submit_button&#x27;, &#x27;click&#x27;);
+        // Verify booking processing
+      const result = await testHarness.waitForBookingResult();
+      expect(result.status).toBe(&#x27;confirmed&#x27;);
+      expect(result.party_size).toBe(6);
+    });
+      test(&#x27;handles validation errors gracefully&#x27;, async () =&gt; {
+      await testHarness.initializeBookingForm();
+        // Submit form with missing required fields
+      testHarness.triggerEvent(&#x27;submit_button&#x27;, &#x27;click&#x27;);
+        // Verify validation errors are shown
+      const errorUI = await testHarness.waitForValidationErrors();
+      expect(errorUI.errors).toContain(&#x27;date_required&#x27;);
+      expect(errorUI.errors).toContain(&#x27;time_required&#x27;);
+    }); });</code></pre>
 <h2>Performance Monitoring</h2>
 <ul>
 <li>Built-in performance metrics for event processing latency</li>
@@ -572,5 +672,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -542,11 +557,279 @@ body {
 <li><strong>CopilotKit Docs:</strong> <a href="https://docs.copilotkit.ai/" style="color:#60a5fa;">https://docs.copilotkit.ai/</a> — AG-UI integration guides</li>
 </ul>
 <h2>Development Environment Setup</h2>
-<pre><code>// Complete package.json for AG-UI + A2UI project {   &quot;name&quot;: &quot;agui-a2ui-app&quot;,   &quot;version&quot;: &quot;1.0.0&quot;,   &quot;dependencies&quot;: {     &quot;@copilotkit/react&quot;: &quot;^1.50.0&quot;,     &quot;@copilotkit/ag-ui&quot;: &quot;^1.2.0&quot;,     &quot;@google/a2ui-react&quot;: &quot;^0.8.2&quot;,     &quot;@google/a2ui-core&quot;: &quot;^0.8.2&quot;,     &quot;react&quot;: &quot;^18.2.0&quot;,     &quot;react-dom&quot;: &quot;^18.2.0&quot;,     &quot;next&quot;: &quot;^14.0.0&quot;,     &quot;typescript&quot;: &quot;^5.0.0&quot;   },   &quot;devDependencies&quot;: {     &quot;@types/react&quot;: &quot;^18.2.0&quot;,     &quot;@types/react-dom&quot;: &quot;^18.2.0&quot;,     &quot;eslint&quot;: &quot;^8.0.0&quot;,     &quot;@typescript-eslint/eslint-plugin&quot;: &quot;^6.0.0&quot;   } }</code></pre>
+<pre><code class="language-javascript">// Complete package.json for AG-UI + A2UI project {
+    &quot;name&quot;: &quot;agui-a2ui-app&quot;,
+    &quot;version&quot;: &quot;1.0.0&quot;,
+    &quot;dependencies&quot;: {
+      &quot;@copilotkit/react&quot;: &quot;^1.50.0&quot;,
+      &quot;@copilotkit/ag-ui&quot;: &quot;^1.2.0&quot;,
+      &quot;@google/a2ui-react&quot;: &quot;^0.8.2&quot;,
+      &quot;@google/a2ui-core&quot;: &quot;^0.8.2&quot;,
+      &quot;react&quot;: &quot;^18.2.0&quot;,
+      &quot;react-dom&quot;: &quot;^18.2.0&quot;,
+      &quot;next&quot;: &quot;^14.0.0&quot;,
+      &quot;typescript&quot;: &quot;^5.0.0&quot;
+    },
+    &quot;devDependencies&quot;: {
+      &quot;@types/react&quot;: &quot;^18.2.0&quot;,
+      &quot;@types/react-dom&quot;: &quot;^18.2.0&quot;,
+      &quot;eslint&quot;: &quot;^8.0.0&quot;,
+      &quot;@typescript-eslint/eslint-plugin&quot;: &quot;^6.0.0&quot;
+    } }</code></pre>
 <h2>Complete React Implementation</h2>
-<pre><code>// Full-featured React component implementation import React, { useState, useCallback, useEffect } from &#x27;react&#x27;; import {   CopilotProvider,   useStream,   useCopilotAction,   useCopilotState } from &#x27;@copilotkit/react&#x27;; import { A2UIRenderer, A2UIComponentCatalog } from &#x27;@google/a2ui-react&#x27;;  interface AgentInterfaceProps {   agentConfig: AGUIConfig;   componentCatalog: A2UIComponentCatalog;   onError?: (error: Error) =&gt; void;   className?: string; }  export function AgentInterface({   agentConfig,   componentCatalog,   onError,   className }: AgentInterfaceProps) {   const [messages, setMessages] = useState&lt;Message[]&gt;([]);   const [uiComponents, setUIComponents] = useState&lt;A2UIComponent[]&gt;([]);   const [connectionState, setConnectionState] = useState&lt;&#x27;connecting&#x27; | &#x27;connected&#x27; | &#x27;error&#x27;&gt;(&#x27;connecting&#x27;);    const {     isLoading,     sendMessage,     streamingMessage,     error   } = useStream({     config: agentConfig,     onGenerativeUI: handleGenerativeUI,     onMessage: handleMessage,     onError: handleError,     onConnectionStateChange: setConnectionState   });    const handleGenerativeUI = useCallback((payload: A2UIPayload) =&gt; {     console.log(&#x27;Processing A2UI payload:&#x27;, payload);          switch (payload.type) {       case &#x27;surface_initialize&#x27;:         setUIComponents([]);         break;                case &#x27;component_add&#x27;:         setUIComponents(prev =&gt; [...prev, payload.component]);         break;                case &#x27;component_update&#x27;:         setUIComponents(prev =&gt;           prev.map(comp =&gt;             comp.id === payload.component_id               ? { ...comp, properties: { ...comp.properties, ...payload.updates.properties } }               : comp           )         );         break;                case &#x27;component_remove&#x27;:         setUIComponents(prev =&gt;           prev.filter(comp =&gt; comp.id !== payload.component_id)         );         break;                default:         console.warn(&#x27;Unknown A2UI payload type:&#x27;, payload.type);     }   }, []);    const handleA2UIEvent = useCallback((event: A2UIEvent) =&gt; {     console.log(&#x27;A2UI event:&#x27;, event);          sendMessage({       type: &#x27;USER_INTERACTION&#x27;,       payload: {         surface_id: event.surfaceId,         component_id: event.componentId,         event_type: event.type,         data: event.data,         timestamp: new Date().toISOString(),         user_context: {           viewport: {             width: window.innerWidth,             height: window.innerHeight           },           device_type: /Mobile/.test(navigator.userAgent) ? &#x27;mobile&#x27; : &#x27;desktop&#x27;         }       }     });   }, [sendMessage]);    const handleMessage = useCallback((message: Message) =&gt; {     setMessages(prev =&gt; [...prev, message]);   }, []);    const handleError = useCallback((error: Error) =&gt; {     console.error(&#x27;AG-UI Error:&#x27;, error);     onError?.(error);     setConnectionState(&#x27;error&#x27;);   }, [onError]);    const handleRetryConnection = useCallback(() =&gt; {     setConnectionState(&#x27;connecting&#x27;);     // Implement reconnection logic   }, []);    useEffect(() =&gt; {     // Setup cleanup on unmount     return () =&gt; {       setMessages([]);       setUIComponents([]);     };   }, []);    return (     &lt;CopilotProvider config={agentConfig}&gt;       &lt;div className={`agent-interface ${className || &#x27;&#x27;}`}&gt;         &lt;ConnectionStatus            state={connectionState}            onRetry={handleRetryConnection}          /&gt;                  &lt;div className=&quot;conversation-area&quot;&gt;           &lt;MessageList              messages={messages}              isLoading={isLoading}             error={error}           /&gt;                      {streamingMessage &amp;&amp; (             &lt;StreamingMessage                content={streamingMessage}               showCursor={isLoading}              /&gt;           )}         &lt;/div&gt;                  &lt;div className=&quot;generative-ui-area&quot;&gt;           {uiComponents.length &gt; 0 &amp;&amp; (             &lt;A2UIRenderer               components={uiComponents}               catalog={componentCatalog}               onEvent={handleA2UIEvent}               theme=&quot;default&quot;               accessibility={{                 announceChanges: true,                 focusManagement: &#x27;auto&#x27;               }}             /&gt;           )}         &lt;/div&gt;                  &lt;MessageInput           onSend={sendMessage}           disabled={isLoading || connectionState !== &#x27;connected&#x27;}           placeholder={             connectionState === &#x27;connected&#x27;                ? &quot;Type your message...&quot;               : &quot;Connecting...&quot;           }         /&gt;       &lt;/div&gt;     &lt;/CopilotProvider&gt;   ); }</code></pre>
+<pre><code class="language-javascript">// Full-featured React component implementation import React, { useState, useCallback, useEffect } from &#x27;react&#x27;; import {
+    CopilotProvider,
+    useStream,
+    useCopilotAction,
+    useCopilotState } from &#x27;@copilotkit/react&#x27;; import { A2UIRenderer, A2UIComponentCatalog } from &#x27;@google/a2ui-react&#x27;;
+  interface AgentInterfaceProps {
+    agentConfig: AGUIConfig;
+    componentCatalog: A2UIComponentCatalog;
+    onError?: (error: Error) =&gt; void;
+    className?: string; }
+  export function AgentInterface({
+    agentConfig,
+    componentCatalog,
+    onError,
+    className }: AgentInterfaceProps) {
+    const [messages, setMessages] = useState&lt;Message[]&gt;([]);
+    const [uiComponents, setUIComponents] = useState&lt;A2UIComponent[]&gt;([]);
+    const [connectionState, setConnectionState] = useState&lt;&#x27;connecting&#x27; | &#x27;connected&#x27; | &#x27;error&#x27;&gt;(&#x27;connecting&#x27;);
+    const {
+      isLoading,
+      sendMessage,
+      streamingMessage,
+      error
+    } = useStream({
+      config: agentConfig,
+      onGenerativeUI: handleGenerativeUI,
+      onMessage: handleMessage,
+      onError: handleError,
+      onConnectionStateChange: setConnectionState
+    });
+    const handleGenerativeUI = useCallback((payload: A2UIPayload) =&gt; {
+      console.log(&#x27;Processing A2UI payload:&#x27;, payload);
+        switch (payload.type) {
+        case &#x27;surface_initialize&#x27;:
+        setUIComponents([]);
+        break;
+        case &#x27;component_add&#x27;:
+        setUIComponents(prev =&gt; [...prev, payload.component]);
+        break;
+        case &#x27;component_update&#x27;:
+        setUIComponents(prev =&gt;
+        prev.map(comp =&gt;
+        comp.id === payload.component_id
+        ? { ...comp, properties: { ...comp.properties, ...payload.updates.properties } }
+        : comp
+        )
+        );
+        break;
+        case &#x27;component_remove&#x27;:
+        setUIComponents(prev =&gt;
+        prev.filter(comp =&gt; comp.id !== payload.component_id)
+        );
+        break;
+        default:
+        console.warn(&#x27;Unknown A2UI payload type:&#x27;, payload.type);
+      }
+    }, []);
+    const handleA2UIEvent = useCallback((event: A2UIEvent) =&gt; {
+      console.log(&#x27;A2UI event:&#x27;, event);
+        sendMessage({
+        type: &#x27;USER_INTERACTION&#x27;,
+        payload: {
+        surface_id: event.surfaceId,
+        component_id: event.componentId,
+        event_type: event.type,
+        data: event.data,
+        timestamp: new Date().toISOString(),
+        user_context: {
+        viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight
+        },
+        device_type: /Mobile/.test(navigator.userAgent) ? &#x27;mobile&#x27; : &#x27;desktop&#x27;
+        }
+        }
+      });
+    }, [sendMessage]);
+    const handleMessage = useCallback((message: Message) =&gt; {
+      setMessages(prev =&gt; [...prev, message]);
+    }, []);
+    const handleError = useCallback((error: Error) =&gt; {
+      console.error(&#x27;AG-UI Error:&#x27;, error);
+      onError?.(error);
+      setConnectionState(&#x27;error&#x27;);
+    }, [onError]);
+    const handleRetryConnection = useCallback(() =&gt; {
+      setConnectionState(&#x27;connecting&#x27;);
+      // Implement reconnection logic
+    }, []);
+    useEffect(() =&gt; {
+      // Setup cleanup on unmount
+      return () =&gt; {
+        setMessages([]);
+        setUIComponents([]);
+      };
+    }, []);
+    return (
+      &lt;CopilotProvider config={agentConfig}&gt;
+        &lt;div className={`agent-interface ${className || &#x27;&#x27;}`}&gt;
+        &lt;ConnectionStatus
+        state={connectionState}
+        onRetry={handleRetryConnection}
+        /&gt;
+        &lt;div className=&quot;conversation-area&quot;&gt;
+        &lt;MessageList
+        messages={messages}
+        isLoading={isLoading}
+        error={error}
+        /&gt;
+        {streamingMessage &amp;&amp; (
+        &lt;StreamingMessage
+        content={streamingMessage}
+        showCursor={isLoading}
+        /&gt;
+        )}
+        &lt;/div&gt;
+        &lt;div className=&quot;generative-ui-area&quot;&gt;
+        {uiComponents.length &gt; 0 &amp;&amp; (
+        &lt;A2UIRenderer
+        components={uiComponents}
+        catalog={componentCatalog}
+        onEvent={handleA2UIEvent}
+        theme=&quot;default&quot;
+        accessibility={{
+        announceChanges: true,
+        focusManagement: &#x27;auto&#x27;
+        }}
+        /&gt;
+        )}
+        &lt;/div&gt;
+        &lt;MessageInput
+        onSend={sendMessage}
+        disabled={isLoading || connectionState !== &#x27;connected&#x27;}
+        placeholder={
+        connectionState === &#x27;connected&#x27;
+        ? &quot;Type your message...&quot;
+        : &quot;Connecting...&quot;
+        }
+        /&gt;
+        &lt;/div&gt;
+      &lt;/CopilotProvider&gt;
+    ); }</code></pre>
 <h2>Backend Agent Implementation</h2>
-<pre><code>// LangGraph agent with AG-UI + A2UI integration from langchain_core.messages import HumanMessage, SystemMessage from langgraph import StateGraph, END from copilotkit.ag_ui import AGUIAdapter, A2UIGenerator import asyncio import json  class RestaurantBookingAgent:     def __init__(self):         self.agui_adapter = AGUIAdapter(             endpoint=&quot;wss://localhost:8000/agui&quot;,             auth_token=os.getenv(&quot;AGUI_AUTH_TOKEN&quot;)         )         self.a2ui_generator = A2UIGenerator()         self.llm = ChatOpenAI(model=&quot;gpt-4&quot;, temperature=0.1)              async def process_booking_request(self, state):         &quot;&quot;&quot;Main booking processing workflow&quot;&quot;&quot;         user_message = state[&#x27;messages&#x27;][-1].content                  # Initialize booking interface         await self.initialize_booking_surface()                  # Extract booking requirements         requirements = await self.extract_booking_requirements(user_message)                  # Generate appropriate form based on requirements         booking_form = await self.generate_booking_form(requirements)                  # Send form to user via AG-UI         await self.agui_adapter.send_event({             &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,             &quot;payload&quot;: booking_form         })                  return state          async def initialize_booking_surface(self):         &quot;&quot;&quot;Initialize the booking UI surface&quot;&quot;&quot;         surface_config = self.a2ui_generator.create_surface({             &quot;surface_id&quot;: f&quot;booking_{uuid.uuid4()}&quot;,             &quot;title&quot;: &quot;Restaurant Reservation&quot;,             &quot;layout&quot;: {                 &quot;type&quot;: &quot;card_layout&quot;,                 &quot;max_width&quot;: &quot;600px&quot;,                 &quot;padding&quot;: &quot;medium&quot;             },             &quot;accessibility&quot;: {                 &quot;aria_label&quot;: &quot;Restaurant booking form&quot;,                 &quot;focus_management&quot;: &quot;auto&quot;             }         })                  await self.agui_adapter.send_event({             &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,              &quot;payload&quot;: surface_config         })          async def generate_booking_form(self, requirements):         &quot;&quot;&quot;Generate booking form based on extracted requirements&quot;&quot;&quot;                  # Use LLM to determine appropriate form fields         form_prompt = f&quot;&quot;&quot;         Generate a restaurant booking form based on these requirements:         {json.dumps(requirements, indent=2)}                  Return A2UI JSON format with appropriate form fields.         Include validation rules and helpful placeholder text.         &quot;&quot;&quot;                  response = await self.llm.ainvoke([             SystemMessage(content=self.get_a2ui_system_prompt()),             HumanMessage(content=form_prompt)         ])                  try:             form_config = json.loads(response.content)             return self.a2ui_generator.validate_and_enhance(form_config)         except json.JSONDecodeError:             # Fallback to default form             return self.generate_default_booking_form()          async def handle_form_submission(self, state):         &quot;&quot;&quot;Process submitted booking form&quot;&quot;&quot;         form_data = state.get(&#x27;form_submission&#x27;)                  # Validate form data         validation_result = await self.validate_booking_data(form_data)                  if not validation_result[&#x27;is_valid&#x27;]:             # Show validation errors             error_ui = self.generate_error_display(validation_result[&#x27;errors&#x27;])             await self.agui_adapter.send_event({                 &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,                 &quot;payload&quot;: error_ui             })             return state                  # Process booking with restaurant API         booking_result = await self.process_restaurant_booking(form_data)                  # Generate confirmation UI         confirmation_ui = await self.generate_confirmation_ui(booking_result)         await self.agui_adapter.send_event({             &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,             &quot;payload&quot;: confirmation_ui         })                  return state          def get_a2ui_system_prompt(self):         return &quot;&quot;&quot;         You are an expert at generating A2UI form configurations.         Always respond with valid JSON following the A2UI specification.                  Guidelines:         - Use appropriate input types for different data         - Include helpful validation rules         - Add clear labels and placeholder text         - Consider accessibility requirements         - Keep forms concise but comprehensive                  Available component types:         - text_input, email_input, phone_input         - number_input, date_input, time_input         - select, radio_group, checkbox_group         - button, submit_button         &quot;&quot;&quot;  # Usage example async def main():     agent = RestaurantBookingAgent()          # Process incoming message     state = {         &#x27;messages&#x27;: [             HumanMessage(content=&quot;I&#x27;d like to book a table for 4 people tomorrow evening&quot;)         ]     }          result = await agent.process_booking_request(state)     print(&quot;Booking agent processed request:&quot;, result)</code></pre>
+<pre><code class="language-javascript">// LangGraph agent with AG-UI + A2UI integration from langchain_core.messages import HumanMessage, SystemMessage from langgraph import StateGraph, END from copilotkit.ag_ui import AGUIAdapter, A2UIGenerator import asyncio import json
+  class RestaurantBookingAgent:
+      def __init__(self):
+        self.agui_adapter = AGUIAdapter(
+        endpoint=&quot;wss://localhost:8000/agui&quot;,
+        auth_token=os.getenv(&quot;AGUI_AUTH_TOKEN&quot;)
+        )
+        self.a2ui_generator = A2UIGenerator()
+        self.llm = ChatOpenAI(model=&quot;gpt-4&quot;, temperature=0.1)
+        async def process_booking_request(self, state):
+        &quot;&quot;&quot;Main booking processing workflow&quot;&quot;&quot;
+        user_message = state[&#x27;messages&#x27;][-1].content
+        # Initialize booking interface
+        await self.initialize_booking_surface()
+        # Extract booking requirements
+        requirements = await self.extract_booking_requirements(user_message)
+        # Generate appropriate form based on requirements
+        booking_form = await self.generate_booking_form(requirements)
+        # Send form to user via AG-UI
+        await self.agui_adapter.send_event({
+        &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,
+        &quot;payload&quot;: booking_form
+        })
+        return state
+        async def initialize_booking_surface(self):
+        &quot;&quot;&quot;Initialize the booking UI surface&quot;&quot;&quot;
+        surface_config = self.a2ui_generator.create_surface({
+        &quot;surface_id&quot;: f&quot;booking_{uuid.uuid4()}&quot;,
+        &quot;title&quot;: &quot;Restaurant Reservation&quot;,
+        &quot;layout&quot;: {
+        &quot;type&quot;: &quot;card_layout&quot;,
+        &quot;max_width&quot;: &quot;600px&quot;,
+        &quot;padding&quot;: &quot;medium&quot;
+        },
+        &quot;accessibility&quot;: {
+        &quot;aria_label&quot;: &quot;Restaurant booking form&quot;,
+        &quot;focus_management&quot;: &quot;auto&quot;
+        }
+        })
+        await self.agui_adapter.send_event({
+        &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,
+        &quot;payload&quot;: surface_config
+        })
+        async def generate_booking_form(self, requirements):
+        &quot;&quot;&quot;Generate booking form based on extracted requirements&quot;&quot;&quot;
+        # Use LLM to determine appropriate form fields
+        form_prompt = f&quot;&quot;&quot;
+        Generate a restaurant booking form based on these requirements:
+        {json.dumps(requirements, indent=2)}
+        Return A2UI JSON format with appropriate form fields.
+        Include validation rules and helpful placeholder text.
+        &quot;&quot;&quot;
+        response = await self.llm.ainvoke([
+        SystemMessage(content=self.get_a2ui_system_prompt()),
+        HumanMessage(content=form_prompt)
+        ])
+        try:
+        form_config = json.loads(response.content)
+        return self.a2ui_generator.validate_and_enhance(form_config)
+        except json.JSONDecodeError:
+        # Fallback to default form
+        return self.generate_default_booking_form()
+        async def handle_form_submission(self, state):
+        &quot;&quot;&quot;Process submitted booking form&quot;&quot;&quot;
+        form_data = state.get(&#x27;form_submission&#x27;)
+        # Validate form data
+        validation_result = await self.validate_booking_data(form_data)
+        if not validation_result[&#x27;is_valid&#x27;]:
+        # Show validation errors
+        error_ui = self.generate_error_display(validation_result[&#x27;errors&#x27;])
+        await self.agui_adapter.send_event({
+        &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,
+        &quot;payload&quot;: error_ui
+        })
+        return state
+        # Process booking with restaurant API
+        booking_result = await self.process_restaurant_booking(form_data)
+        # Generate confirmation UI
+        confirmation_ui = await self.generate_confirmation_ui(booking_result)
+        await self.agui_adapter.send_event({
+        &quot;type&quot;: &quot;GENERATIVE_UI_UPDATE&quot;,
+        &quot;payload&quot;: confirmation_ui
+        })
+        return state
+        def get_a2ui_system_prompt(self):
+        return &quot;&quot;&quot;
+        You are an expert at generating A2UI form configurations.
+        Always respond with valid JSON following the A2UI specification.
+        Guidelines:
+        - Use appropriate input types for different data
+        - Include helpful validation rules
+        - Add clear labels and placeholder text
+        - Consider accessibility requirements
+        - Keep forms concise but comprehensive
+        Available component types:
+        - text_input, email_input, phone_input
+        - number_input, date_input, time_input
+        - select, radio_group, checkbox_group
+        - button, submit_button
+        &quot;&quot;&quot;
+  # Usage example async def main():
+      agent = RestaurantBookingAgent()
+        # Process incoming message
+      state = {
+        &#x27;messages&#x27;: [
+        HumanMessage(content=&quot;I&#x27;d like to book a table for 4 people tomorrow evening&quot;)
+        ]
+      }
+        result = await agent.process_booking_request(state)
+      print(&quot;Booking agent processed request:&quot;, result)</code></pre>
           <nav class="nav">
             <a href="06_chapter.html" class="nav__btn nav__btn--secondary">← Previous</a>
             <a href="01_chapter.html" class="nav__btn nav__btn--secondary">Contents</a>
@@ -566,5 +849,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

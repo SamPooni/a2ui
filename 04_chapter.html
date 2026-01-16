@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -585,37 +600,246 @@ body {
 <p>AG-UI defines 17 distinct event types organized into four primary categories: lifecycle events, message events, tool events, and special events. Each event follows a consistent JSON structure with required metadata fields and optional payload data, ensuring predictable behavior across all implementations.</p>
 <h3>Message Structure Standard</h3>
 <p>All AG-UI events share a common message structure that provides consistency and enables generic handling capabilities:</p>
-<pre><code>{   &quot;type&quot;: &quot;EVENT_TYPE_NAME&quot;,   &quot;id&quot;: &quot;unique_message_id&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:00.123Z&quot;,   &quot;version&quot;: &quot;1.2.0&quot;,   &quot;source&quot;: {     &quot;agent_id&quot;: &quot;agent_identifier&quot;,     &quot;session_id&quot;: &quot;session_identifier&quot;,     &quot;user_id&quot;: &quot;user_identifier&quot;   },   &quot;target&quot;: {     &quot;client_id&quot;: &quot;client_identifier&quot;,     &quot;surface_id&quot;: &quot;ui_surface_identifier&quot;   },   &quot;correlation&quot;: {     &quot;thread_id&quot;: &quot;conversation_thread&quot;,     &quot;run_id&quot;: &quot;agent_run_identifier&quot;,     &quot;parent_id&quot;: &quot;parent_message_id&quot;   },   &quot;metadata&quot;: {     &quot;priority&quot;: &quot;normal&quot;,     &quot;ttl&quot;: 30000,     &quot;requires_ack&quot;: true,     &quot;custom_fields&quot;: {}   },   &quot;payload&quot;: {     // Event-specific data   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;EVENT_TYPE_NAME&quot;,
+    &quot;id&quot;: &quot;unique_message_id&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:00.123Z&quot;,
+    &quot;version&quot;: &quot;1.2.0&quot;,
+    &quot;source&quot;: {
+      &quot;agent_id&quot;: &quot;agent_identifier&quot;,
+      &quot;session_id&quot;: &quot;session_identifier&quot;,
+      &quot;user_id&quot;: &quot;user_identifier&quot;
+    },
+    &quot;target&quot;: {
+      &quot;client_id&quot;: &quot;client_identifier&quot;,
+      &quot;surface_id&quot;: &quot;ui_surface_identifier&quot;
+    },
+    &quot;correlation&quot;: {
+      &quot;thread_id&quot;: &quot;conversation_thread&quot;,
+      &quot;run_id&quot;: &quot;agent_run_identifier&quot;,
+      &quot;parent_id&quot;: &quot;parent_message_id&quot;
+    },
+    &quot;metadata&quot;: {
+      &quot;priority&quot;: &quot;normal&quot;,
+      &quot;ttl&quot;: 30000,
+      &quot;requires_ack&quot;: true,
+      &quot;custom_fields&quot;: {}
+    },
+    &quot;payload&quot;: {
+      // Event-specific data
+    } }</code></pre>
 <p>This structure enables sophisticated message routing, correlation tracking, and debugging capabilities while maintaining simplicity for basic use cases.</p>
 <h3>Lifecycle Events</h3>
 <p>Lifecycle events manage the overall state of agent interactions, providing transparency into agent processing stages and enabling sophisticated monitoring and debugging capabilities:</p>
 <h4>RUN_STARTED Event</h4>
-<pre><code>{   &quot;type&quot;: &quot;RUN_STARTED&quot;,   &quot;id&quot;: &quot;msg_001&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:00Z&quot;,   &quot;source&quot;: {     &quot;agent_id&quot;: &quot;customer_service_agent_v2&quot;,     &quot;session_id&quot;: &quot;sess_abc123&quot;   },   &quot;correlation&quot;: {     &quot;thread_id&quot;: &quot;thread_xyz789&quot;,     &quot;run_id&quot;: &quot;run_def456&quot;   },   &quot;payload&quot;: {     &quot;agent_type&quot;: &quot;customer_service&quot;,     &quot;agent_version&quot;: &quot;2.1.0&quot;,     &quot;capabilities&quot;: [       &quot;text_generation&quot;,       &quot;tool_calling&quot;,       &quot;ui_generation&quot;     ],     &quot;estimated_duration&quot;: 5000,     &quot;processing_priority&quot;: &quot;normal&quot;   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;RUN_STARTED&quot;,
+    &quot;id&quot;: &quot;msg_001&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:00Z&quot;,
+    &quot;source&quot;: {
+      &quot;agent_id&quot;: &quot;customer_service_agent_v2&quot;,
+      &quot;session_id&quot;: &quot;sess_abc123&quot;
+    },
+    &quot;correlation&quot;: {
+      &quot;thread_id&quot;: &quot;thread_xyz789&quot;,
+      &quot;run_id&quot;: &quot;run_def456&quot;
+    },
+    &quot;payload&quot;: {
+      &quot;agent_type&quot;: &quot;customer_service&quot;,
+      &quot;agent_version&quot;: &quot;2.1.0&quot;,
+      &quot;capabilities&quot;: [
+        &quot;text_generation&quot;,
+        &quot;tool_calling&quot;,
+        &quot;ui_generation&quot;
+      ],
+      &quot;estimated_duration&quot;: 5000,
+      &quot;processing_priority&quot;: &quot;normal&quot;
+    } }</code></pre>
 <h4>RUN_FINISHED Event</h4>
-<pre><code>{   &quot;type&quot;: &quot;RUN_FINISHED&quot;,   &quot;id&quot;: &quot;msg_015&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:42Z&quot;,   &quot;correlation&quot;: {     &quot;thread_id&quot;: &quot;thread_xyz789&quot;,     &quot;run_id&quot;: &quot;run_def456&quot;   },   &quot;payload&quot;: {     &quot;status&quot;: &quot;completed&quot;,     &quot;duration_ms&quot;: 42000,     &quot;tokens_used&quot;: {       &quot;input&quot;: 1247,       &quot;output&quot;: 892,       &quot;total&quot;: 2139     },     &quot;tools_called&quot;: 3,     &quot;ui_components_generated&quot;: 5,     &quot;final_state&quot;: &quot;success&quot;   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;RUN_FINISHED&quot;,
+    &quot;id&quot;: &quot;msg_015&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:42Z&quot;,
+    &quot;correlation&quot;: {
+      &quot;thread_id&quot;: &quot;thread_xyz789&quot;,
+      &quot;run_id&quot;: &quot;run_def456&quot;
+    },
+    &quot;payload&quot;: {
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;duration_ms&quot;: 42000,
+      &quot;tokens_used&quot;: {
+        &quot;input&quot;: 1247,
+        &quot;output&quot;: 892,
+        &quot;total&quot;: 2139
+      },
+      &quot;tools_called&quot;: 3,
+      &quot;ui_components_generated&quot;: 5,
+      &quot;final_state&quot;: &quot;success&quot;
+    } }</code></pre>
 <h3>Message Events</h3>
 <p>Message events handle the streaming of conversational content, enabling real-time text generation with proper formatting, metadata, and context preservation:</p>
 <h4>TEXT_MESSAGE_CONTENT Event</h4>
-<pre><code>{   &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,   &quot;id&quot;: &quot;msg_007&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:15Z&quot;,   &quot;correlation&quot;: {     &quot;thread_id&quot;: &quot;thread_xyz789&quot;,     &quot;run_id&quot;: &quot;run_def456&quot;,     &quot;parent_id&quot;: &quot;msg_006&quot;   },   &quot;payload&quot;: {     &quot;content&quot;: &quot;Based on your account history, I recommend &quot;,     &quot;content_type&quot;: &quot;text/plain&quot;,     &quot;role&quot;: &quot;assistant&quot;,     &quot;streaming&quot;: true,     &quot;token_index&quot;: 47,     &quot;formatting&quot;: {       &quot;bold_ranges&quot;: [],       &quot;italic_ranges&quot;: [],       &quot;code_ranges&quot;: []     },     &quot;partial&quot;: true   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,
+    &quot;id&quot;: &quot;msg_007&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:15Z&quot;,
+    &quot;correlation&quot;: {
+      &quot;thread_id&quot;: &quot;thread_xyz789&quot;,
+      &quot;run_id&quot;: &quot;run_def456&quot;,
+      &quot;parent_id&quot;: &quot;msg_006&quot;
+    },
+    &quot;payload&quot;: {
+      &quot;content&quot;: &quot;Based on your account history, I recommend &quot;,
+      &quot;content_type&quot;: &quot;text/plain&quot;,
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;streaming&quot;: true,
+      &quot;token_index&quot;: 47,
+      &quot;formatting&quot;: {
+        &quot;bold_ranges&quot;: [],
+        &quot;italic_ranges&quot;: [],
+        &quot;code_ranges&quot;: []
+      },
+      &quot;partial&quot;: true
+    } }</code></pre>
 <h3>Tool Events</h3>
 <p>Tool events coordinate function calls and external integrations, providing complete visibility into agent decision-making processes and enabling human-in-the-loop workflows:</p>
 <h4>TOOL_CALL_START Event</h4>
-<pre><code>{   &quot;type&quot;: &quot;TOOL_CALL_START&quot;,   &quot;id&quot;: &quot;msg_008&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:20Z&quot;,   &quot;correlation&quot;: {     &quot;thread_id&quot;: &quot;thread_xyz789&quot;,     &quot;run_id&quot;: &quot;run_def456&quot;   },   &quot;payload&quot;: {     &quot;tool_name&quot;: &quot;search_knowledge_base&quot;,     &quot;tool_id&quot;: &quot;tool_kb_search_v1&quot;,     &quot;parameters&quot;: {       &quot;query&quot;: &quot;Q4 financial results revenue breakdown&quot;,       &quot;filters&quot;: {         &quot;year&quot;: 2025,         &quot;department&quot;: &quot;finance&quot;,         &quot;document_type&quot;: [&quot;report&quot;, &quot;presentation&quot;]       },       &quot;max_results&quot;: 10     },     &quot;requires_approval&quot;: false,     &quot;estimated_duration&quot;: 2000,     &quot;metadata&quot;: {       &quot;tool_description&quot;: &quot;Searches internal knowledge base&quot;,       &quot;security_level&quot;: &quot;internal&quot;,       &quot;data_sources&quot;: [&quot;SharePoint&quot;, &quot;Confluence&quot;, &quot;Drive&quot;]     }   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;TOOL_CALL_START&quot;,
+    &quot;id&quot;: &quot;msg_008&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:20Z&quot;,
+    &quot;correlation&quot;: {
+      &quot;thread_id&quot;: &quot;thread_xyz789&quot;,
+      &quot;run_id&quot;: &quot;run_def456&quot;
+    },
+    &quot;payload&quot;: {
+      &quot;tool_name&quot;: &quot;search_knowledge_base&quot;,
+      &quot;tool_id&quot;: &quot;tool_kb_search_v1&quot;,
+      &quot;parameters&quot;: {
+        &quot;query&quot;: &quot;Q4 financial results revenue breakdown&quot;,
+        &quot;filters&quot;: {
+        &quot;year&quot;: 2025,
+        &quot;department&quot;: &quot;finance&quot;,
+        &quot;document_type&quot;: [&quot;report&quot;, &quot;presentation&quot;]
+        },
+        &quot;max_results&quot;: 10
+      },
+      &quot;requires_approval&quot;: false,
+      &quot;estimated_duration&quot;: 2000,
+      &quot;metadata&quot;: {
+        &quot;tool_description&quot;: &quot;Searches internal knowledge base&quot;,
+        &quot;security_level&quot;: &quot;internal&quot;,
+        &quot;data_sources&quot;: [&quot;SharePoint&quot;, &quot;Confluence&quot;, &quot;Drive&quot;]
+      }
+    } }</code></pre>
 <h4>TOOL_CALL_RESULT Event</h4>
-<pre><code>{   &quot;type&quot;: &quot;TOOL_CALL_RESULT&quot;,   &quot;id&quot;: &quot;msg_009&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:22Z&quot;,   &quot;correlation&quot;: {     &quot;thread_id&quot;: &quot;thread_xyz789&quot;,     &quot;run_id&quot;: &quot;run_def456&quot;,     &quot;parent_id&quot;: &quot;msg_008&quot;   },   &quot;payload&quot;: {     &quot;tool_name&quot;: &quot;search_knowledge_base&quot;,     &quot;status&quot;: &quot;success&quot;,     &quot;duration_ms&quot;: 1847,     &quot;result&quot;: {       &quot;documents_found&quot;: 7,       &quot;documents&quot;: [         {           &quot;title&quot;: &quot;Q4 2025 Financial Summary&quot;,           &quot;url&quot;: &quot;https://internal.company.com/docs/q4-summary&quot;,           &quot;relevance_score&quot;: 0.94,           &quot;excerpt&quot;: &quot;Q4 revenue increased 23% year-over-year...&quot;,           &quot;last_modified&quot;: &quot;2025-01-10T15:30:00Z&quot;         }       ],       &quot;search_time_ms&quot;: 245,       &quot;total_matches&quot;: 47     },     &quot;metadata&quot;: {       &quot;cache_hit&quot;: false,       &quot;sources_accessed&quot;: [&quot;SharePoint&quot;, &quot;Drive&quot;],       &quot;permissions_checked&quot;: true     }   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;TOOL_CALL_RESULT&quot;,
+    &quot;id&quot;: &quot;msg_009&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:22Z&quot;,
+    &quot;correlation&quot;: {
+      &quot;thread_id&quot;: &quot;thread_xyz789&quot;,
+      &quot;run_id&quot;: &quot;run_def456&quot;,
+      &quot;parent_id&quot;: &quot;msg_008&quot;
+    },
+    &quot;payload&quot;: {
+      &quot;tool_name&quot;: &quot;search_knowledge_base&quot;,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;duration_ms&quot;: 1847,
+      &quot;result&quot;: {
+        &quot;documents_found&quot;: 7,
+        &quot;documents&quot;: [
+        {
+        &quot;title&quot;: &quot;Q4 2025 Financial Summary&quot;,
+        &quot;url&quot;: &quot;https://internal.company.com/docs/q4-summary&quot;,
+        &quot;relevance_score&quot;: 0.94,
+        &quot;excerpt&quot;: &quot;Q4 revenue increased 23% year-over-year...&quot;,
+        &quot;last_modified&quot;: &quot;2025-01-10T15:30:00Z&quot;
+        }
+        ],
+        &quot;search_time_ms&quot;: 245,
+        &quot;total_matches&quot;: 47
+      },
+      &quot;metadata&quot;: {
+        &quot;cache_hit&quot;: false,
+        &quot;sources_accessed&quot;: [&quot;SharePoint&quot;, &quot;Drive&quot;],
+        &quot;permissions_checked&quot;: true
+      }
+    } }</code></pre>
 <h2>State Management and Synchronization</h2>
 <p>AG-UI implements sophisticated state management through explicit synchronization events that maintain consistency between agent backend and frontend application state. This approach enables complex, collaborative workflows while preserving performance and reliability characteristics essential for production applications.</p>
 <h3>Shared State Patterns</h3>
 <p>The protocol supports three distinct state sharing patterns, each optimized for different use cases and performance requirements:</p>
 <h4>Read-Only State Access</h4>
 <p>Agent observes application state without modification rights. Ideal for monitoring, analytics, and context-aware responses:</p>
-<pre><code>{   &quot;type&quot;: &quot;SHARED_STATE_ACCESS&quot;,   &quot;payload&quot;: {     &quot;access_type&quot;: &quot;read_only&quot;,     &quot;state_keys&quot;: [       &quot;user_profile&quot;,       &quot;current_page&quot;,       &quot;shopping_cart&quot;,       &quot;session_context&quot;     ],     &quot;subscription_mode&quot;: &quot;real_time&quot;,     &quot;filters&quot;: {       &quot;exclude_sensitive&quot;: true,       &quot;max_depth&quot;: 2     }   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;SHARED_STATE_ACCESS&quot;,
+    &quot;payload&quot;: {
+      &quot;access_type&quot;: &quot;read_only&quot;,
+      &quot;state_keys&quot;: [
+        &quot;user_profile&quot;,
+        &quot;current_page&quot;,
+        &quot;shopping_cart&quot;,
+        &quot;session_context&quot;
+      ],
+      &quot;subscription_mode&quot;: &quot;real_time&quot;,
+      &quot;filters&quot;: {
+        &quot;exclude_sensitive&quot;: true,
+        &quot;max_depth&quot;: 2
+      }
+    } }</code></pre>
 <h4>Write-Only State Updates</h4>
 <p>Agent updates application state based on user interactions and processing results. Used for workflow automation and data persistence:</p>
-<pre><code>{   &quot;type&quot;: &quot;SHARED_STATE_PATCH&quot;,   &quot;payload&quot;: {     &quot;operation&quot;: &quot;update&quot;,     &quot;path&quot;: &quot;/user_preferences/dashboard_layout&quot;,     &quot;value&quot;: {       &quot;layout_type&quot;: &quot;three_column&quot;,       &quot;widgets&quot;: [         {           &quot;id&quot;: &quot;revenue_chart&quot;,           &quot;position&quot;: { &quot;col&quot;: 1, &quot;row&quot;: 1 },           &quot;size&quot;: { &quot;width&quot;: 2, &quot;height&quot;: 1 }         }       ]     },     &quot;version&quot;: 47,     &quot;metadata&quot;: {       &quot;updated_by&quot;: &quot;layout_optimization_agent&quot;,       &quot;reason&quot;: &quot;user_behavior_analysis&quot;,       &quot;confidence&quot;: 0.89     }   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;SHARED_STATE_PATCH&quot;,
+    &quot;payload&quot;: {
+      &quot;operation&quot;: &quot;update&quot;,
+      &quot;path&quot;: &quot;/user_preferences/dashboard_layout&quot;,
+      &quot;value&quot;: {
+        &quot;layout_type&quot;: &quot;three_column&quot;,
+        &quot;widgets&quot;: [
+        {
+        &quot;id&quot;: &quot;revenue_chart&quot;,
+        &quot;position&quot;: { &quot;col&quot;: 1, &quot;row&quot;: 1 },
+        &quot;size&quot;: { &quot;width&quot;: 2, &quot;height&quot;: 1 }
+        }
+        ]
+      },
+      &quot;version&quot;: 47,
+      &quot;metadata&quot;: {
+        &quot;updated_by&quot;: &quot;layout_optimization_agent&quot;,
+        &quot;reason&quot;: &quot;user_behavior_analysis&quot;,
+        &quot;confidence&quot;: 0.89
+      }
+    } }</code></pre>
 <h4>Bidirectional State Synchronization</h4>
 <p>Full synchronization enabling collaborative editing scenarios where both users and agents can modify shared state simultaneously:</p>
-<pre><code>{   &quot;type&quot;: &quot;SHARED_STATE_CONFLICT&quot;,   &quot;payload&quot;: {     &quot;conflict_path&quot;: &quot;/document/paragraph_3/content&quot;,     &quot;user_version&quot;: {       &quot;value&quot;: &quot;The quarterly results show significant improvement...&quot;,       &quot;timestamp&quot;: &quot;2026-01-15T10:30:25Z&quot;,       &quot;version&quot;: 48     },     &quot;agent_version&quot;: {       &quot;value&quot;: &quot;Q4 financial data indicates substantial growth...&quot;,       &quot;timestamp&quot;: &quot;2026-01-15T10:30:26Z&quot;,        &quot;version&quot;: 49     },     &quot;resolution_strategy&quot;: &quot;merge_with_annotation&quot;,     &quot;merged_result&quot;: {       &quot;value&quot;: &quot;The quarterly results show significant improvement [Agent: Q4 financial data indicates substantial growth]...&quot;,       &quot;annotations&quot;: [         {           &quot;type&quot;: &quot;agent_suggestion&quot;,           &quot;range&quot;: [67, 108],           &quot;confidence&quot;: 0.92         }       ]     }   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;SHARED_STATE_CONFLICT&quot;,
+    &quot;payload&quot;: {
+      &quot;conflict_path&quot;: &quot;/document/paragraph_3/content&quot;,
+      &quot;user_version&quot;: {
+        &quot;value&quot;: &quot;The quarterly results show significant improvement...&quot;,
+        &quot;timestamp&quot;: &quot;2026-01-15T10:30:25Z&quot;,
+        &quot;version&quot;: 48
+      },
+      &quot;agent_version&quot;: {
+        &quot;value&quot;: &quot;Q4 financial data indicates substantial growth...&quot;,
+        &quot;timestamp&quot;: &quot;2026-01-15T10:30:26Z&quot;,
+        &quot;version&quot;: 49
+      },
+      &quot;resolution_strategy&quot;: &quot;merge_with_annotation&quot;,
+      &quot;merged_result&quot;: {
+        &quot;value&quot;: &quot;The quarterly results show significant improvement [Agent: Q4 financial data indicates substantial growth]...&quot;,
+        &quot;annotations&quot;: [
+        {
+        &quot;type&quot;: &quot;agent_suggestion&quot;,
+        &quot;range&quot;: [67, 108],
+        &quot;confidence&quot;: 0.92
+        }
+        ]
+      }
+    } }</code></pre>
 <h3>Conflict Resolution Strategies</h3>
 <p>AG-UI implements several conflict resolution strategies for scenarios where users and agents modify shared state concurrently:</p>
 <ul>
@@ -630,19 +854,123 @@ body {
 <h3>Supported Transport Mechanisms</h3>
 <h4>HTTP Server-Sent Events (SSE)</h4>
 <p>Optimal for unidirectional streaming from agents to clients. Provides excellent browser compatibility and firewall traversal:</p>
-<pre><code>// Client-side SSE connection const eventSource = new EventSource(&#x27;/agui/stream&#x27;, {   headers: {     &#x27;Authorization&#x27;: &#x27;Bearer &#x27; + authToken,     &#x27;AG-UI-Version&#x27;: &#x27;1.2.0&#x27;   } });  eventSource.addEventListener(&#x27;TEXT_MESSAGE_CONTENT&#x27;, (event) =&gt; {   const message = JSON.parse(event.data);   updateStreamingMessage(message.payload.content); });  eventSource.addEventListener(&#x27;GENERATIVE_UI_UPDATE&#x27;, (event) =&gt; {   const uiEvent = JSON.parse(event.data);   renderA2UIComponent(uiEvent.payload); });</code></pre>
+<pre><code class="language-javascript">// Client-side SSE connection const eventSource = new EventSource(&#x27;/agui/stream&#x27;, {
+    headers: {
+      &#x27;Authorization&#x27;: &#x27;Bearer &#x27; + authToken,
+      &#x27;AG-UI-Version&#x27;: &#x27;1.2.0&#x27;
+    } });
+  eventSource.addEventListener(&#x27;TEXT_MESSAGE_CONTENT&#x27;, (event) =&gt; {
+    const message = JSON.parse(event.data);
+    updateStreamingMessage(message.payload.content); });
+  eventSource.addEventListener(&#x27;GENERATIVE_UI_UPDATE&#x27;, (event) =&gt; {
+    const uiEvent = JSON.parse(event.data);
+    renderA2UIComponent(uiEvent.payload); });</code></pre>
 <h4>WebSocket Bidirectional Communication</h4>
 <p>Enables full bidirectional real-time communication for interactive scenarios requiring immediate user feedback:</p>
-<pre><code>// WebSocket AG-UI implementation class AGUIWebSocketClient {   constructor(url, options = {}) {     this.ws = new WebSocket(url);     this.messageQueue = [];     this.eventHandlers = new Map();          this.ws.onopen = () =&gt; {       this.sendAuth(options.authToken);       this.flushMessageQueue();     };          this.ws.onmessage = (event) =&gt; {       const message = JSON.parse(event.data);       this.handleIncomingMessage(message);     };   }      send(eventType, payload) {     const message = {       type: eventType,       id: generateId(),       timestamp: new Date().toISOString(),       payload: payload     };          if (this.ws.readyState === WebSocket.OPEN) {       this.ws.send(JSON.stringify(message));     } else {       this.messageQueue.push(message);     }   }      on(eventType, handler) {     if (!this.eventHandlers.has(eventType)) {       this.eventHandlers.set(eventType, []);     }     this.eventHandlers.get(eventType).push(handler);   } }</code></pre>
+<pre><code class="language-javascript">// WebSocket AG-UI implementation class AGUIWebSocketClient {
+    constructor(url, options = {}) {
+      this.ws = new WebSocket(url);
+      this.messageQueue = [];
+      this.eventHandlers = new Map();
+        this.ws.onopen = () =&gt; {
+        this.sendAuth(options.authToken);
+        this.flushMessageQueue();
+      };
+        this.ws.onmessage = (event) =&gt; {
+        const message = JSON.parse(event.data);
+        this.handleIncomingMessage(message);
+      };
+    }
+      send(eventType, payload) {
+      const message = {
+        type: eventType,
+        id: generateId(),
+        timestamp: new Date().toISOString(),
+        payload: payload
+      };
+        if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify(message));
+      } else {
+        this.messageQueue.push(message);
+      }
+    }
+      on(eventType, handler) {
+      if (!this.eventHandlers.has(eventType)) {
+        this.eventHandlers.set(eventType, []);
+      }
+      this.eventHandlers.get(eventType).push(handler);
+    } }</code></pre>
 <h4>HTTP Request-Response Patterns</h4>
 <p>For simple request-response interactions and file uploads. Provides maximum compatibility and caching capabilities:</p>
-<pre><code>// HTTP POST for discrete interactions async function sendUserMessage(content, threadId) {   const response = await fetch(&#x27;/agui/message&#x27;, {     method: &#x27;POST&#x27;,     headers: {       &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,       &#x27;Authorization&#x27;: &#x27;Bearer &#x27; + authToken     },     body: JSON.stringify({       type: &#x27;HUMAN_MESSAGE&#x27;,       payload: {         content: content,         thread_id: threadId,         message_type: &#x27;text&#x27;,         attachments: []       }     })   });      const result = await response.json();   return result; }</code></pre>
+<pre><code class="language-javascript">// HTTP POST for discrete interactions async function sendUserMessage(content, threadId) {
+    const response = await fetch(&#x27;/agui/message&#x27;, {
+      method: &#x27;POST&#x27;,
+      headers: {
+        &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,
+        &#x27;Authorization&#x27;: &#x27;Bearer &#x27; + authToken
+      },
+      body: JSON.stringify({
+        type: &#x27;HUMAN_MESSAGE&#x27;,
+        payload: {
+        content: content,
+        thread_id: threadId,
+        message_type: &#x27;text&#x27;,
+        attachments: []
+        }
+      })
+    });
+      const result = await response.json();
+    return result; }</code></pre>
 <h3>Performance Optimizations</h3>
 <p>AG-UI incorporates several performance optimizations that enable real-time interactions while minimizing bandwidth and computational overhead:</p>
 <h4>Event Batching</h4>
-<pre><code>{   &quot;type&quot;: &quot;BATCH&quot;,   &quot;id&quot;: &quot;batch_001&quot;,   &quot;timestamp&quot;: &quot;2026-01-15T10:30:30Z&quot;,   &quot;payload&quot;: {     &quot;events&quot;: [       {         &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,         &quot;payload&quot;: { &quot;content&quot;: &quot;Based on &quot; }       },       {         &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,          &quot;payload&quot;: { &quot;content&quot;: &quot;your requirements, &quot; }       },       {         &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,         &quot;payload&quot;: { &quot;content&quot;: &quot;I recommend &quot; }       }     ],     &quot;batch_size&quot;: 3,     &quot;compression&quot;: &quot;gzip&quot;   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;BATCH&quot;,
+    &quot;id&quot;: &quot;batch_001&quot;,
+    &quot;timestamp&quot;: &quot;2026-01-15T10:30:30Z&quot;,
+    &quot;payload&quot;: {
+      &quot;events&quot;: [
+        {
+        &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,
+        &quot;payload&quot;: { &quot;content&quot;: &quot;Based on &quot; }
+        },
+        {
+        &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,
+        &quot;payload&quot;: { &quot;content&quot;: &quot;your requirements, &quot; }
+        },
+        {
+        &quot;type&quot;: &quot;TEXT_MESSAGE_CONTENT&quot;,
+        &quot;payload&quot;: { &quot;content&quot;: &quot;I recommend &quot; }
+        }
+      ],
+      &quot;batch_size&quot;: 3,
+      &quot;compression&quot;: &quot;gzip&quot;
+    } }</code></pre>
 <h4>Intelligent Buffering</h4>
-<pre><code>// Client-side buffering strategy class AGUIMessageBuffer {   constructor(options = {}) {     this.buffer = [];     this.maxSize = options.maxSize || 50;     this.flushInterval = options.flushInterval || 100;     this.compressionThreshold = options.compressionThreshold || 1000;          setInterval(() =&gt; this.flush(), this.flushInterval);   }      add(event) {     this.buffer.push(event);          if (this.buffer.length &gt;= this.maxSize) {       this.flush();     }   }      flush() {     if (this.buffer.length === 0) return;          const events = this.buffer.splice(0);     const batchSize = JSON.stringify(events).length;          if (batchSize &gt; this.compressionThreshold) {       this.sendCompressed(events);     } else {       this.sendBatch(events);     }   } }</code></pre>
+<pre><code class="language-javascript">// Client-side buffering strategy class AGUIMessageBuffer {
+    constructor(options = {}) {
+      this.buffer = [];
+      this.maxSize = options.maxSize || 50;
+      this.flushInterval = options.flushInterval || 100;
+      this.compressionThreshold = options.compressionThreshold || 1000;
+        setInterval(() =&gt; this.flush(), this.flushInterval);
+    }
+      add(event) {
+      this.buffer.push(event);
+        if (this.buffer.length &gt;= this.maxSize) {
+        this.flush();
+      }
+    }
+      flush() {
+      if (this.buffer.length === 0) return;
+        const events = this.buffer.splice(0);
+      const batchSize = JSON.stringify(events).length;
+        if (batchSize &gt; this.compressionThreshold) {
+        this.sendCompressed(events);
+      } else {
+        this.sendBatch(events);
+      }
+    } }</code></pre>
 <h3>Scaling and Reliability</h3>
 <p>The protocol&#x27;s stateless design enables horizontal scaling and fault tolerance through standard load balancing techniques while maintaining session consistency:</p>
 <ul>
@@ -661,9 +989,48 @@ body {
 <li>API key authentication for service-to-service communication</li>
 <li>Certificate-based authentication for high-security environments</li>
 </ul>
-<pre><code>// Authentication configuration const aguiConfig = {   authentication: {     type: &#x27;oauth2&#x27;,     provider: &#x27;azure_ad&#x27;,     client_id: process.env.AZURE_CLIENT_ID,     tenant_id: process.env.AZURE_TENANT_ID,     scopes: [&#x27;openid&#x27;, &#x27;profile&#x27;, &#x27;agui.read&#x27;, &#x27;agui.write&#x27;],     token_validation: {       verify_signature: true,       check_expiration: true,       required_claims: [&#x27;sub&#x27;, &#x27;aud&#x27;, &#x27;iss&#x27;],       allowed_issuers: [         &#x27;https://login.microsoftonline.com/{tenant}/v2.0&#x27;       ]     }   } };</code></pre>
+<pre><code class="language-javascript">// Authentication configuration const aguiConfig = {
+    authentication: {
+      type: &#x27;oauth2&#x27;,
+      provider: &#x27;azure_ad&#x27;,
+      client_id: process.env.AZURE_CLIENT_ID,
+      tenant_id: process.env.AZURE_TENANT_ID,
+      scopes: [&#x27;openid&#x27;, &#x27;profile&#x27;, &#x27;agui.read&#x27;, &#x27;agui.write&#x27;],
+      token_validation: {
+        verify_signature: true,
+        check_expiration: true,
+        required_claims: [&#x27;sub&#x27;, &#x27;aud&#x27;, &#x27;iss&#x27;],
+        allowed_issuers: [
+        &#x27;https://login.microsoftonline.com/{tenant}/v2.0&#x27;
+        ]
+      }
+    } };</code></pre>
 <h3>Authorization and Access Control</h3>
-<pre><code>{   &quot;type&quot;: &quot;ACCESS_CONTROL_CHECK&quot;,   &quot;payload&quot;: {     &quot;user_id&quot;: &quot;user123&quot;,     &quot;requested_action&quot;: &quot;TOOL_CALL&quot;,     &quot;resource&quot;: {       &quot;tool_name&quot;: &quot;database_query&quot;,       &quot;data_classification&quot;: &quot;internal&quot;,       &quot;required_permissions&quot;: [&quot;data.read&quot;, &quot;analytics.query&quot;]     },     &quot;context&quot;: {       &quot;ip_address&quot;: &quot;10.0.1.15&quot;,       &quot;user_agent&quot;: &quot;Mozilla/5.0...&quot;,       &quot;session_duration&quot;: 1800,       &quot;risk_score&quot;: 0.23     },     &quot;authorization_result&quot;: {       &quot;allowed&quot;: true,       &quot;conditions&quot;: [         &quot;audit_log_required&quot;,         &quot;rate_limit_applies&quot;       ],       &quot;expiration&quot;: &quot;2026-01-15T11:30:00Z&quot;     }   } }</code></pre>
+<pre><code class="language-javascript">{
+    &quot;type&quot;: &quot;ACCESS_CONTROL_CHECK&quot;,
+    &quot;payload&quot;: {
+      &quot;user_id&quot;: &quot;user123&quot;,
+      &quot;requested_action&quot;: &quot;TOOL_CALL&quot;,
+      &quot;resource&quot;: {
+        &quot;tool_name&quot;: &quot;database_query&quot;,
+        &quot;data_classification&quot;: &quot;internal&quot;,
+        &quot;required_permissions&quot;: [&quot;data.read&quot;, &quot;analytics.query&quot;]
+      },
+      &quot;context&quot;: {
+        &quot;ip_address&quot;: &quot;10.0.1.15&quot;,
+        &quot;user_agent&quot;: &quot;Mozilla/5.0...&quot;,
+        &quot;session_duration&quot;: 1800,
+        &quot;risk_score&quot;: 0.23
+      },
+      &quot;authorization_result&quot;: {
+        &quot;allowed&quot;: true,
+        &quot;conditions&quot;: [
+        &quot;audit_log_required&quot;,
+        &quot;rate_limit_applies&quot;
+        ],
+        &quot;expiration&quot;: &quot;2026-01-15T11:30:00Z&quot;
+      }
+    } }</code></pre>
           <nav class="nav">
             <a href="03_chapter.html" class="nav__btn nav__btn--secondary">← Previous</a>
             <a href="01_chapter.html" class="nav__btn nav__btn--secondary">Contents</a>
@@ -683,5 +1050,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -542,9 +557,140 @@ body {
 <li>Connection pooling and multiplexing for agent communications</li>
 <li>Intelligent caching strategies for frequently accessed components</li>
 </ul>
-<pre><code>// Performance optimization configuration const performanceConfig = {   eventBatching: {     enabled: true,     maxBatchSize: 50,     batchTimeout: 100, // ms     compressionThreshold: 1024 // bytes   },      componentCaching: {     enabled: true,     maxCacheSize: 100, // components     ttl: 300000, // 5 minutes     keyStrategy: &#x27;content_hash&#x27;   },      streaming: {     backpressureThreshold: 1000, // events     flowControlEnabled: true,     adaptiveBitrate: true   },      rendering: {     virtualScrolling: true,     lazyLoading: true,     memoization: &#x27;aggressive&#x27;,     updateDebouncing: 16 // ms (60 FPS)   } };  // Performance monitoring hooks function usePerformanceMonitoring() {   const [metrics, setMetrics] = useState({     eventLatency: 0,     renderTime: 0,     memoryUsage: 0,     componentCount: 0   });      useEffect(() =&gt; {     const monitor = new PerformanceMonitor({       onMetricsUpdate: setMetrics,       sampleRate: 1000 // ms     });          return () =&gt; monitor.stop();   }, []);      return metrics; }</code></pre>
+<pre><code class="language-javascript">// Performance optimization configuration const performanceConfig = {
+    eventBatching: {
+      enabled: true,
+      maxBatchSize: 50,
+      batchTimeout: 100, // ms
+      compressionThreshold: 1024 // bytes
+    },
+      componentCaching: {
+      enabled: true,
+      maxCacheSize: 100, // components
+      ttl: 300000, // 5 minutes
+      keyStrategy: &#x27;content_hash&#x27;
+    },
+      streaming: {
+      backpressureThreshold: 1000, // events
+      flowControlEnabled: true,
+      adaptiveBitrate: true
+    },
+      rendering: {
+      virtualScrolling: true,
+      lazyLoading: true,
+      memoization: &#x27;aggressive&#x27;,
+      updateDebouncing: 16 // ms (60 FPS)
+    } };
+  // Performance monitoring hooks function usePerformanceMonitoring() {
+    const [metrics, setMetrics] = useState({
+      eventLatency: 0,
+      renderTime: 0,
+      memoryUsage: 0,
+      componentCount: 0
+    });
+      useEffect(() =&gt; {
+      const monitor = new PerformanceMonitor({
+        onMetricsUpdate: setMetrics,
+        sampleRate: 1000 // ms
+      });
+        return () =&gt; monitor.stop();
+    }, []);
+      return metrics; }</code></pre>
 <h2>Security Architecture</h2>
-<pre><code>// Comprehensive security configuration const securityConfig = {   authentication: {     type: &#x27;oauth2_pkce&#x27;,     provider: &#x27;enterprise_sso&#x27;,     client_id: process.env.OAUTH_CLIENT_ID,     scopes: [&#x27;agui.read&#x27;, &#x27;agui.write&#x27;, &#x27;a2ui.render&#x27;],     token_validation: {       verify_signature: true,       check_expiration: true,       clock_skew_tolerance: 300, // seconds       required_claims: [&#x27;sub&#x27;, &#x27;aud&#x27;, &#x27;iss&#x27;, &#x27;agui.access&#x27;],       custom_validators: [         &#x27;validate_user_permissions&#x27;,         &#x27;check_rate_limits&#x27;       ]     }   },      authorization: {     model: &#x27;rbac&#x27;, // Role-Based Access Control     component_access_control: {       enabled: true,       default_policy: &#x27;deny&#x27;,       role_mappings: {         &#x27;admin&#x27;: [&#x27;*&#x27;],         &#x27;user&#x27;: [&#x27;text_input&#x27;, &#x27;button&#x27;, &#x27;display_card&#x27;],         &#x27;readonly&#x27;: [&#x27;display_card&#x27;, &#x27;chart&#x27;]       }     },     tool_permissions: {       &#x27;database_query&#x27;: [&#x27;admin&#x27;, &#x27;analyst&#x27;],       &#x27;email_send&#x27;: [&#x27;admin&#x27;, &#x27;marketing&#x27;],       &#x27;file_upload&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;]     },     data_classification: {       &#x27;public&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;, &#x27;readonly&#x27;],       &#x27;internal&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;],       &#x27;confidential&#x27;: [&#x27;admin&#x27;],       &#x27;restricted&#x27;: [] // Explicit approval required     }   },      encryption: {     transport: {       protocol: &#x27;tls_1_3&#x27;,       cipher_suites: [&#x27;TLS_AES_256_GCM_SHA384&#x27;],       certificate_pinning: true     },     at_rest: {       algorithm: &#x27;aes_256_gcm&#x27;,       key_management: &#x27;hsm&#x27;, // Hardware Security Module       key_rotation_interval: &#x27;30d&#x27;     },     in_memory: {       enabled: true,       clear_on_idle: true,       idle_timeout: 1800 // seconds     }   },      content_security: {     component_validation: {       strict_schema_validation: true,       sanitize_properties: true,       validate_event_handlers: true     },     xss_protection: {       enabled: true,       content_type_validation: true,       html_sanitization: &#x27;aggressive&#x27;     },     injection_prevention: {       sql_injection_detection: true,       script_injection_blocking: true,       command_injection_filtering: true     }   },      audit_logging: {     enabled: true,     log_level: &#x27;detailed&#x27;,     events: [       &#x27;authentication&#x27;,       &#x27;authorization_failures&#x27;,       &#x27;component_generation&#x27;,       &#x27;user_interactions&#x27;,       &#x27;data_access&#x27;,       &#x27;configuration_changes&#x27;     ],     retention_policy: {       duration: &#x27;7_years&#x27;,       compression: &#x27;gzip&#x27;,       archival: &#x27;s3_glacier&#x27;     },     compliance_standards: [       &#x27;SOX&#x27;, &#x27;GDPR&#x27;, &#x27;HIPAA&#x27;, &#x27;PCI_DSS&#x27;     ]   } };</code></pre>
+<pre><code class="language-javascript">// Comprehensive security configuration const securityConfig = {
+    authentication: {
+      type: &#x27;oauth2_pkce&#x27;,
+      provider: &#x27;enterprise_sso&#x27;,
+      client_id: process.env.OAUTH_CLIENT_ID,
+      scopes: [&#x27;agui.read&#x27;, &#x27;agui.write&#x27;, &#x27;a2ui.render&#x27;],
+      token_validation: {
+        verify_signature: true,
+        check_expiration: true,
+        clock_skew_tolerance: 300, // seconds
+        required_claims: [&#x27;sub&#x27;, &#x27;aud&#x27;, &#x27;iss&#x27;, &#x27;agui.access&#x27;],
+        custom_validators: [
+        &#x27;validate_user_permissions&#x27;,
+        &#x27;check_rate_limits&#x27;
+        ]
+      }
+    },
+      authorization: {
+      model: &#x27;rbac&#x27;, // Role-Based Access Control
+      component_access_control: {
+        enabled: true,
+        default_policy: &#x27;deny&#x27;,
+        role_mappings: {
+        &#x27;admin&#x27;: [&#x27;*&#x27;],
+        &#x27;user&#x27;: [&#x27;text_input&#x27;, &#x27;button&#x27;, &#x27;display_card&#x27;],
+        &#x27;readonly&#x27;: [&#x27;display_card&#x27;, &#x27;chart&#x27;]
+        }
+      },
+      tool_permissions: {
+        &#x27;database_query&#x27;: [&#x27;admin&#x27;, &#x27;analyst&#x27;],
+        &#x27;email_send&#x27;: [&#x27;admin&#x27;, &#x27;marketing&#x27;],
+        &#x27;file_upload&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;]
+      },
+      data_classification: {
+        &#x27;public&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;, &#x27;readonly&#x27;],
+        &#x27;internal&#x27;: [&#x27;admin&#x27;, &#x27;user&#x27;],
+        &#x27;confidential&#x27;: [&#x27;admin&#x27;],
+        &#x27;restricted&#x27;: [] // Explicit approval required
+      }
+    },
+      encryption: {
+      transport: {
+        protocol: &#x27;tls_1_3&#x27;,
+        cipher_suites: [&#x27;TLS_AES_256_GCM_SHA384&#x27;],
+        certificate_pinning: true
+      },
+      at_rest: {
+        algorithm: &#x27;aes_256_gcm&#x27;,
+        key_management: &#x27;hsm&#x27;, // Hardware Security Module
+        key_rotation_interval: &#x27;30d&#x27;
+      },
+      in_memory: {
+        enabled: true,
+        clear_on_idle: true,
+        idle_timeout: 1800 // seconds
+      }
+    },
+      content_security: {
+      component_validation: {
+        strict_schema_validation: true,
+        sanitize_properties: true,
+        validate_event_handlers: true
+      },
+      xss_protection: {
+        enabled: true,
+        content_type_validation: true,
+        html_sanitization: &#x27;aggressive&#x27;
+      },
+      injection_prevention: {
+        sql_injection_detection: true,
+        script_injection_blocking: true,
+        command_injection_filtering: true
+      }
+    },
+      audit_logging: {
+      enabled: true,
+      log_level: &#x27;detailed&#x27;,
+      events: [
+        &#x27;authentication&#x27;,
+        &#x27;authorization_failures&#x27;,
+        &#x27;component_generation&#x27;,
+        &#x27;user_interactions&#x27;,
+        &#x27;data_access&#x27;,
+        &#x27;configuration_changes&#x27;
+      ],
+      retention_policy: {
+        duration: &#x27;7_years&#x27;,
+        compression: &#x27;gzip&#x27;,
+        archival: &#x27;s3_glacier&#x27;
+      },
+      compliance_standards: [
+        &#x27;SOX&#x27;, &#x27;GDPR&#x27;, &#x27;HIPAA&#x27;, &#x27;PCI_DSS&#x27;
+      ]
+    } };</code></pre>
 <h2>Threat Model and Mitigations</h2>
 <p>Key security threats and mitigation strategies:</p>
 <ul>
@@ -573,5 +719,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>

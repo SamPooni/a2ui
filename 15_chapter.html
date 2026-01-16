@@ -520,7 +520,22 @@ body {
 ::-webkit-scrollbar-track { background: #0f0f1a; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Code block improvements */
+.content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.content pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 <body>
   <div class="page">
@@ -542,9 +557,121 @@ body {
 <li>Version your catalog carefully to maintain backward compatibility</li>
 <li>Document component behavior, limitations, and performance characteristics</li>
 </ul>
-<pre><code>// Example of well-structured component catalog {   &quot;catalog_version&quot;: &quot;1.2.0&quot;,   &quot;compatibility&quot;: {     &quot;min_a2ui_version&quot;: &quot;0.8.0&quot;,     &quot;max_a2ui_version&quot;: &quot;1.0.0&quot;   },   &quot;components&quot;: {     &quot;enhanced_data_table&quot;: {       &quot;version&quot;: &quot;2.1.0&quot;,       &quot;description&quot;: &quot;High-performance data table with advanced features&quot;,       &quot;properties&quot;: {         &quot;data&quot;: {           &quot;type&quot;: &quot;array&quot;,           &quot;required&quot;: true,           &quot;max_items&quot;: 10000,           &quot;validation&quot;: {             &quot;schema&quot;: &quot;table_data_v2&quot;,             &quot;sanitize&quot;: true           }         },         &quot;pagination&quot;: {           &quot;type&quot;: &quot;object&quot;,           &quot;properties&quot;: {             &quot;enabled&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: true },             &quot;page_size&quot;: {                &quot;type&quot;: &quot;number&quot;,                &quot;minimum&quot;: 10,                &quot;maximum&quot;: 100,               &quot;default&quot;: 25              }           }         }       },       &quot;performance&quot;: {         &quot;virtual_scrolling&quot;: true,         &quot;lazy_loading&quot;: true,         &quot;estimated_render_time&quot;: &quot;&lt; 100ms for 1000 rows&quot;       },       &quot;accessibility&quot;: {         &quot;wcag_compliance&quot;: &quot;AA&quot;,         &quot;keyboard_navigation&quot;: &quot;full&quot;,         &quot;screen_reader_support&quot;: &quot;comprehensive&quot;       },       &quot;security&quot;: {         &quot;input_sanitization&quot;: &quot;strict&quot;,         &quot;xss_protection&quot;: true,         &quot;data_validation&quot;: &quot;schema_enforced&quot;       }     }   } }</code></pre>
+<pre><code class="language-javascript">// Example of well-structured component catalog {
+    &quot;catalog_version&quot;: &quot;1.2.0&quot;,
+    &quot;compatibility&quot;: {
+      &quot;min_a2ui_version&quot;: &quot;0.8.0&quot;,
+      &quot;max_a2ui_version&quot;: &quot;1.0.0&quot;
+    },
+    &quot;components&quot;: {
+      &quot;enhanced_data_table&quot;: {
+        &quot;version&quot;: &quot;2.1.0&quot;,
+        &quot;description&quot;: &quot;High-performance data table with advanced features&quot;,
+        &quot;properties&quot;: {
+        &quot;data&quot;: {
+        &quot;type&quot;: &quot;array&quot;,
+        &quot;required&quot;: true,
+        &quot;max_items&quot;: 10000,
+        &quot;validation&quot;: {
+        &quot;schema&quot;: &quot;table_data_v2&quot;,
+        &quot;sanitize&quot;: true
+        }
+        },
+        &quot;pagination&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;properties&quot;: {
+        &quot;enabled&quot;: { &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: true },
+        &quot;page_size&quot;: {
+        &quot;type&quot;: &quot;number&quot;,
+        &quot;minimum&quot;: 10,
+        &quot;maximum&quot;: 100,
+        &quot;default&quot;: 25
+        }
+        }
+        }
+        },
+        &quot;performance&quot;: {
+        &quot;virtual_scrolling&quot;: true,
+        &quot;lazy_loading&quot;: true,
+        &quot;estimated_render_time&quot;: &quot;&lt; 100ms for 1000 rows&quot;
+        },
+        &quot;accessibility&quot;: {
+        &quot;wcag_compliance&quot;: &quot;AA&quot;,
+        &quot;keyboard_navigation&quot;: &quot;full&quot;,
+        &quot;screen_reader_support&quot;: &quot;comprehensive&quot;
+        },
+        &quot;security&quot;: {
+        &quot;input_sanitization&quot;: &quot;strict&quot;,
+        &quot;xss_protection&quot;: true,
+        &quot;data_validation&quot;: &quot;schema_enforced&quot;
+        }
+      }
+    } }</code></pre>
 <h2>Error Handling and Resilience</h2>
-<pre><code>// Comprehensive error handling strategy class AGUIErrorHandler {   constructor(config) {     this.fallbackComponents = config.fallbackComponents;     this.retryConfig = config.retryConfig;     this.errorReporting = config.errorReporting;     this.gracefulDegradation = config.gracefulDegradation;   }      handleComponentError(error, component, context) {     // Structured error logging     this.errorReporting.log({       type: &#x27;component_error&#x27;,       component_id: component.id,       component_type: component.type,       error_message: error.message,       error_code: error.code,       stack_trace: error.stack,       user_context: context.user,       session_context: context.session,       timestamp: Date.now(),       severity: this.classifyError(error)     });          // Attempt progressive fallbacks     const fallbackStrategies = [       () =&gt; this.tryComponentRecovery(component),       () =&gt; this.tryFallbackComponent(component),       () =&gt; this.trySimplifiedComponent(component),       () =&gt; this.showErrorPlaceholder(component)     ];          for (const strategy of fallbackStrategies) {       try {         const result = strategy();         if (result) return result;       } catch (fallbackError) {         this.errorReporting.log({           type: &#x27;fallback_error&#x27;,           original_error: error.message,           fallback_error: fallbackError.message,           strategy: strategy.name         });       }     }          // Final fallback: minimal error display     return this.createMinimalErrorComponent(error, component);   }      handleStreamingError(error, context) {     const retryPolicy = this.getRetryPolicy(error);          if (retryPolicy.should_retry) {       return this.scheduleRetry(context, retryPolicy);     }          // Show connection error with user-friendly messaging     return this.showConnectionErrorUI({       error_type: error.type,       user_message: this.generateUserFriendlyMessage(error),       retry_available: retryPolicy.manual_retry_allowed,       estimated_recovery_time: retryPolicy.estimated_recovery     });   }      classifyError(error) {     // Classify errors for appropriate handling     if (error.code?.startsWith(&#x27;VALIDATION_&#x27;)) return &#x27;low&#x27;;     if (error.code?.startsWith(&#x27;NETWORK_&#x27;)) return &#x27;medium&#x27;;     if (error.code?.startsWith(&#x27;SECURITY_&#x27;)) return &#x27;critical&#x27;;     return &#x27;medium&#x27;;   } }</code></pre>
+<pre><code class="language-javascript">// Comprehensive error handling strategy class AGUIErrorHandler {
+    constructor(config) {
+      this.fallbackComponents = config.fallbackComponents;
+      this.retryConfig = config.retryConfig;
+      this.errorReporting = config.errorReporting;
+      this.gracefulDegradation = config.gracefulDegradation;
+    }
+      handleComponentError(error, component, context) {
+      // Structured error logging
+      this.errorReporting.log({
+        type: &#x27;component_error&#x27;,
+        component_id: component.id,
+        component_type: component.type,
+        error_message: error.message,
+        error_code: error.code,
+        stack_trace: error.stack,
+        user_context: context.user,
+        session_context: context.session,
+        timestamp: Date.now(),
+        severity: this.classifyError(error)
+      });
+        // Attempt progressive fallbacks
+      const fallbackStrategies = [
+        () =&gt; this.tryComponentRecovery(component),
+        () =&gt; this.tryFallbackComponent(component),
+        () =&gt; this.trySimplifiedComponent(component),
+        () =&gt; this.showErrorPlaceholder(component)
+      ];
+        for (const strategy of fallbackStrategies) {
+        try {
+        const result = strategy();
+        if (result) return result;
+        } catch (fallbackError) {
+        this.errorReporting.log({
+        type: &#x27;fallback_error&#x27;,
+        original_error: error.message,
+        fallback_error: fallbackError.message,
+        strategy: strategy.name
+        });
+        }
+      }
+        // Final fallback: minimal error display
+      return this.createMinimalErrorComponent(error, component);
+    }
+      handleStreamingError(error, context) {
+      const retryPolicy = this.getRetryPolicy(error);
+        if (retryPolicy.should_retry) {
+        return this.scheduleRetry(context, retryPolicy);
+      }
+        // Show connection error with user-friendly messaging
+      return this.showConnectionErrorUI({
+        error_type: error.type,
+        user_message: this.generateUserFriendlyMessage(error),
+        retry_available: retryPolicy.manual_retry_allowed,
+        estimated_recovery_time: retryPolicy.estimated_recovery
+      });
+    }
+      classifyError(error) {
+      // Classify errors for appropriate handling
+      if (error.code?.startsWith(&#x27;VALIDATION_&#x27;)) return &#x27;low&#x27;;
+      if (error.code?.startsWith(&#x27;NETWORK_&#x27;)) return &#x27;medium&#x27;;
+      if (error.code?.startsWith(&#x27;SECURITY_&#x27;)) return &#x27;critical&#x27;;
+      return &#x27;medium&#x27;;
+    } }</code></pre>
 <h2>Testing Strategies</h2>
 <ul>
 <li>Unit testing for individual component rendering logic</li>
@@ -580,5 +707,7 @@ body {
       </section>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>
